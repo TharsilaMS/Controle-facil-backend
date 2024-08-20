@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "MetaSonhos")
+@Table(name = "meta_sonhos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

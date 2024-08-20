@@ -6,8 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
 @Entity
-@Table(name = "Despesa")
+@Table(name = "despesa")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,8 +18,8 @@ public class Despesa {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @ManyToOne
-        @JoinColumn(name = "usuario_id")
+        @ManyToOne(fetch = FetchType.LAZY) // Melhor usar LAZY para não carregar desnecessariamente
+        @JoinColumn(name = "usuario_id", nullable = false)
         private Usuario usuario;
 
         @Column(nullable = false)
@@ -27,8 +28,8 @@ public class Despesa {
         @Column(nullable = false)
         private Double valor;
 
-        @ManyToOne
-        @JoinColumn(name = "categoria_id")
+        @ManyToOne(fetch = FetchType.LAZY) // Melhor usar LAZY para não carregar desnecessariamente
+        @JoinColumn(name = "categoria_id", nullable = false)
         private CategoriaDespesa categoriaDespesa;
 
         @Enumerated(EnumType.STRING)
@@ -37,8 +38,4 @@ public class Despesa {
 
         @Column(nullable = false)
         private LocalDate data;
-
-
-
-
 }
