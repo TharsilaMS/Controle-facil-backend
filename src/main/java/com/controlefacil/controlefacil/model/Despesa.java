@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -18,7 +19,7 @@ public class Despesa {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @ManyToOne(fetch = FetchType.LAZY) // Melhor usar LAZY para não carregar desnecessariamente
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "usuario_id", nullable = false)
         private Usuario usuario;
 
@@ -26,9 +27,9 @@ public class Despesa {
         private String descricao;
 
         @Column(nullable = false)
-        private Double valor;
+        private BigDecimal valor;
 
-        @ManyToOne(fetch = FetchType.LAZY) // Melhor usar LAZY para não carregar desnecessariamente
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "categoria_id", nullable = false)
         private CategoriaDespesa categoriaDespesa;
 

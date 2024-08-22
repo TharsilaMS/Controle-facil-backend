@@ -2,6 +2,7 @@ package com.controlefacil.controlefacil.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -44,6 +45,7 @@ public class Usuario {
     @Column(name = "faixa_salarial")
     private FaixaSalarial faixaSalarial;
 
-
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal saldo;
 
 }

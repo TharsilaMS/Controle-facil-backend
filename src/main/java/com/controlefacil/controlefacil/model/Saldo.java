@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.math.BigDecimal;
+
 
 @Entity
 @Table(name = "saldo")
@@ -18,11 +20,11 @@ public class Saldo {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(nullable = false)
-    private Double valor;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal valor;
 
     @Column(nullable = false)
     private LocalDate data;

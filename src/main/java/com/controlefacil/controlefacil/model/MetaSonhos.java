@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -30,7 +31,7 @@ public class MetaSonhos {
     private String descricao;
 
     @Column(name = "valor_alvo", nullable = false)
-    private Double valorAlvo;
+    private BigDecimal valor;
 
     @Column(nullable = false)
     private LocalDate prazo;
