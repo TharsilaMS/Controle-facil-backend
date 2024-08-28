@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
-import java.math.BigDecimal;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "saldo")
@@ -24,7 +24,7 @@ public class Saldo {
     private Usuario usuario;
 
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal valor;
+    private BigDecimal saldo;
 
     @Column(nullable = false)
     private LocalDate data;
