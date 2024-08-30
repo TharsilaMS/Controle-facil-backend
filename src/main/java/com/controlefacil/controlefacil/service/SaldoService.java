@@ -39,7 +39,12 @@ public class SaldoService {
         // Calcula o saldo (total de rendas menos total de despesas)
         return totalRendas.subtract(totalDespesas);
     }
+
+    public List<Despesa> getDespesasByUsuario(Long usuarioId) {
+        return despesaRepository.findByUsuario_IdUsuario(usuarioId);
+    }
+
+    public List<Renda> getRendasByUsuario(Long usuarioId) {
+        return rendaRepository.findByUsuario_IdUsuario(usuarioId);
+    }
 }
-
-
-
