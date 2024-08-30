@@ -34,7 +34,7 @@ public class CategoriaDespesaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoriaDespesa> updateCategoria(@PathVariable Long id, @RequestBody CategoriaDespesa categoriaDespesa) {
-        if (!service.findById(id).isPresent()) {
+        if (service.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         categoriaDespesa.setId(id);
@@ -43,7 +43,7 @@ public class CategoriaDespesaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
-        if (!service.findById(id).isPresent()) {
+        if (service.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         service.deleteById(id);

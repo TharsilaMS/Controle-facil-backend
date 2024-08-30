@@ -30,7 +30,7 @@ public class Despesa {
         private BigDecimal valor;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "categoria_id", nullable = false)
+        @JoinColumn(name = "categoria_id")
         private CategoriaDespesa categoriaDespesa;
 
         @Enumerated(EnumType.STRING)

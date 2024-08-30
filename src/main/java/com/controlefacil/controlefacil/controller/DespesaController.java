@@ -39,7 +39,7 @@ public class DespesaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Despesa> updateDespesa(@PathVariable Long id, @RequestBody Despesa despesa) {
-        if (!despesaService.getDespesaById(id).isPresent()) {
+        if (despesaService.getDespesaById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         despesa.setId(id);
@@ -48,10 +48,16 @@ public class DespesaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDespesa(@PathVariable Long id) {
-        if (!despesaService.getDespesaById(id).isPresent()) {
+        if (despesaService.getDespesaById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         despesaService.deleteDespesa(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Despesa>> getDespesasByUsuarioId(@PathVariable Long usuarioId) {
+        List<Despesa> despesas = despesaService.getDespesasByUsuarioId(usuarioId);
+        return despesas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(despesas);
     }
 }

@@ -1,31 +1,45 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
-import com.controlefacil.controlefacil.model.Saldo;
-import com.controlefacil.controlefacil.repository.SaldoRepository;
+import com.controlefacil.controlefacil.model.Despesa;
+import com.controlefacil.controlefacil.model.Renda;
+import com.controlefacil.controlefacil.repository.DespesaRepository;
+import com.controlefacil.controlefacil.repository.RendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class SaldoService {
+
     @Autowired
-    private SaldoRepository saldoRepository;
+    private DespesaRepository despesaRepository;
 
-    public List<Saldo> getAllSaldos() {
-        return saldoRepository.findAll();
-    }
+    @Autowired
+    private RendaRepository rendaRepository;
 
-    public Saldo getSaldoById(Long id) {
-        return saldoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Saldo not found"));
-    }
+    public BigDecimal calcularSaldo(Long usuarioId) {
+        // Obtém todas as despesas do usuário
+        List<Despesa> despesas = despesaRepository.findByUsuario_IdUsuario(usuarioId);
 
-    public Saldo saveSaldo(Saldo saldo) {
-        return saldoRepository.save(saldo);
-    }
+        // Obtém todas as rendas do usuário
+        List<Renda> rendas = rendaRepository.findByUsuario_IdUsuario(usuarioId);
 
-    public void deleteSaldo(Long id) {
-        saldoRepository.deleteById(id);
+        // Calcula o total das despesas
+        BigDecimal totalDespesas = despesas.stream()
+                .map(Despesa::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Calcula o total das rendas
+        BigDecimal totalRendas = rendas.stream()
+                .map(Renda::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Calcula o saldo (total de rendas menos total de despesas)
+        return totalRendas.subtract(totalDespesas);
     }
 }
+
+
+
