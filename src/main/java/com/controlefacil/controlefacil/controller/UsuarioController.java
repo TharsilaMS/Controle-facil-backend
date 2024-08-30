@@ -1,5 +1,6 @@
 package com.controlefacil.controlefacil.controller;
 
+import com.controlefacil.controlefacil.dto.UsuarioDTO;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -18,31 +20,67 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public List<Usuario> getAllUsuarios() {
-        return usuarioService.getAllUsuarios();
+    public List<UsuarioDTO> getAllUsuarios() {
+        return usuarioService.getAllUsuarios().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Long id) {
         Optional<Usuario> usuario = usuarioService.getUsuarioById(id);
-        return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return usuario.map(this::convertToDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(usuarioDTO.getNome());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setGenero(usuarioDTO.getGenero());
+        usuario.setDataNascimento(usuarioDTO.getDataNascimento());
+        usuario.setRamoAtuacao(usuarioDTO.getRamoAtuacao());
+        usuario.setFaixaSalarial(usuarioDTO.getFaixaSalarial());
+
         Usuario createdUsuario = usuarioService.createUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUsuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(createdUsuario));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setIdUsuario(id);
+        usuario.setNome(usuarioDTO.getNome());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setGenero(usuarioDTO.getGenero());
+        usuario.setDataNascimento(usuarioDTO.getDataNascimento());
+        usuario.setRamoAtuacao(usuarioDTO.getRamoAtuacao());
+        usuario.setFaixaSalarial(usuarioDTO.getFaixaSalarial());
+
         Usuario updatedUsuario = usuarioService.updateUsuario(id, usuario);
-        return updatedUsuario != null ? ResponseEntity.ok(updatedUsuario) : ResponseEntity.notFound().build();
+        return updatedUsuario != null ? ResponseEntity.ok(convertToDTO(updatedUsuario)) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private UsuarioDTO convertToDTO(Usuario usuario) {
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setIdUsuario(usuario.getIdUsuario());
+        usuarioDTO.setNome(usuario.getNome());
+        usuarioDTO.setEmail(usuario.getEmail());
+        usuarioDTO.setSenha(usuario.getSenha());
+        usuarioDTO.setGenero(usuario.getGenero());
+        usuarioDTO.setDataNascimento(usuario.getDataNascimento());
+        usuarioDTO.setRamoAtuacao(usuario.getRamoAtuacao());
+        usuarioDTO.setFaixaSalarial(usuario.getFaixaSalarial());
+        return usuarioDTO;
     }
 }
