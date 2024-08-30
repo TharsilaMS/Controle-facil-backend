@@ -1,5 +1,6 @@
 package com.controlefacil.controlefacil.dto;
 
+import com.controlefacil.controlefacil.model.Tipo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,6 @@ public class DespesaDTO {
     private String descricao;
     private BigDecimal valor;
     private Long categoriaDespesaId;
-    private String tipo;
+    private Tipo tipo;
     private LocalDate data;
 }

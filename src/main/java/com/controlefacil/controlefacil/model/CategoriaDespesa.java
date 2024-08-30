@@ -17,6 +17,9 @@ public class CategoriaDespesa {
 
         @Column(nullable = false)
         private String nome;
+        public CategoriaDespesa(Long id) {
+                this.id = id;
+        }
     }
 
 
