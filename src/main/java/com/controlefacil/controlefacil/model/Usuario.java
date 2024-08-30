@@ -29,7 +29,7 @@ public class Usuario {
     private String senha;
 
     @Column(name = "data_cadastro", updatable = false)
-    private LocalDateTime dataCadastro;
+    private LocalDateTime dataCadastro = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
