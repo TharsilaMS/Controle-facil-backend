@@ -44,4 +44,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(name = "faixa_salarial")
     private FaixaSalarial faixaSalarial;
+    public Usuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 }

@@ -1,13 +1,17 @@
 package com.controlefacil.controlefacil.controller;
 
+import com.controlefacil.controlefacil.dto.RendaDTO;
 import com.controlefacil.controlefacil.model.Renda;
+import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.service.RendaService;
+import com.controlefacil.controlefacil.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/rendas")
@@ -16,35 +20,71 @@ public class RendaController {
     @Autowired
     private RendaService rendaService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping
-    public List<Renda> getAllRendas() {
-        return rendaService.getAllRendas();
+    public List<RendaDTO> getAllRendas() {
+        return rendaService.getAllRendas().stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Renda> getRendaById(@PathVariable Long id) {
-        Renda renda = rendaService.getRendaById(id);
-        return ResponseEntity.ok(renda);
+    public ResponseEntity<RendaDTO> getRendaById(@PathVariable Long id) {
+        Optional<Renda> renda = rendaService.getRendaById(id);
+        return renda.map(this::convertToDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Renda> createRenda(@RequestBody Renda renda) {
-        if (renda.getUsuario() == null || renda.getUsuario().getIdUsuario() == null) {
+    public ResponseEntity<RendaDTO> createRenda(@RequestBody RendaDTO rendaDTO) {
+        if (rendaDTO.getUsuarioId() == null) {
             return ResponseEntity.badRequest().body(null);
         }
+        Usuario usuario = new Usuario(rendaDTO.getUsuarioId());
+        Renda renda = new Renda();
+        renda.setUsuario(usuario);
+        renda.setDescricao(rendaDTO.getDescricao());
+        renda.setValor(rendaDTO.getValor());
+        renda.setData(rendaDTO.getData());
         Renda novaRenda = rendaService.saveRenda(renda);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaRenda);
+        return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(novaRenda));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Renda> updateRenda(@PathVariable Long id, @RequestBody Renda rendaDetails) {
-        Renda updatedRenda = rendaService.updateRenda(id, rendaDetails);
-        return ResponseEntity.ok(updatedRenda);
+    public ResponseEntity<RendaDTO> updateRenda(@PathVariable Long id, @RequestBody RendaDTO rendaDTO) {
+        Optional<Renda> existingRenda = rendaService.getRendaById(id);
+        if (existingRenda.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Renda renda = existingRenda.get();
+        renda.setUsuario(new Usuario(rendaDTO.getUsuarioId()));
+        renda.setDescricao(rendaDTO.getDescricao());
+        renda.setValor(rendaDTO.getValor());
+        renda.setData(rendaDTO.getData());
+        Renda updatedRenda = rendaService.saveRenda(renda);
+        return ResponseEntity.ok(convertToDTO(updatedRenda));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRenda(@PathVariable Long id) {
+        Optional<Renda> existingRenda = rendaService.getRendaById(id);
+        if (existingRenda.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         rendaService.deleteRenda(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private RendaDTO convertToDTO(Renda renda) {
+        return new RendaDTO(
+                renda.getId(),
+                renda.getUsuario().getIdUsuario(),
+                renda.getDescricao(),
+                renda.getValor(),
+                renda.getData()
+        );
     }
 }

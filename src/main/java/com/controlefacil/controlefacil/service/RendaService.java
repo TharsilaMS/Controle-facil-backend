@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RendaService {
@@ -23,12 +24,11 @@ public class RendaService {
         return rendaRepository.findAll();
     }
 
-    public Renda getRendaById(Long id) {
+    public Optional<Renda> getRendaById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da renda não pode ser nulo.");
         }
-        return rendaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Renda não encontrada com o id " + id));
+        return rendaRepository.findById(id);
     }
 
     public Renda saveRenda(Renda renda) {
@@ -45,7 +45,8 @@ public class RendaService {
         if (id == null) {
             throw new IllegalArgumentException("O ID da renda deve ser fornecido.");
         }
-        Renda renda = getRendaById(id);
+        Renda renda = getRendaById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Renda não encontrada com o id " + id));
         renda.setDescricao(rendaDetails.getDescricao());
         renda.setValor(rendaDetails.getValor());
         renda.setData(rendaDetails.getData());
@@ -63,7 +64,8 @@ public class RendaService {
         if (id == null) {
             throw new IllegalArgumentException("O ID da renda deve ser fornecido.");
         }
-        Renda renda = getRendaById(id);
+        Renda renda = getRendaById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Renda não encontrada com o id " + id));
         rendaRepository.delete(renda);
     }
 }
