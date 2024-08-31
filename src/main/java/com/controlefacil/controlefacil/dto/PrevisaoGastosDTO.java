@@ -10,10 +10,11 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaldoDTO {
+public class PrevisaoGastosDTO {
 
     private Long id;
     private Long usuarioId;
-    private BigDecimal saldo;
-
+    private BigDecimal limiteGastos;
+    private BigDecimal gastosAtuais;
+    private LocalDate dataRevisao;
 }

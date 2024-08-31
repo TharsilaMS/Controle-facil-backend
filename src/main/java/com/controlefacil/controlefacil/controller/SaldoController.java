@@ -22,7 +22,7 @@ public class SaldoController {
     @GetMapping("/{usuarioId}")
     public ResponseEntity<SaldoDTO> getSaldo(@PathVariable Long usuarioId) {
         BigDecimal saldo = saldoService.calcularSaldo(usuarioId);
-        return ResponseEntity.ok(new SaldoDTO(null, usuarioId, saldo, null, null));
+        return ResponseEntity.ok(new SaldoDTO(null, usuarioId, saldo));
     }
 
     @GetMapping("/despesas/{usuarioId}")

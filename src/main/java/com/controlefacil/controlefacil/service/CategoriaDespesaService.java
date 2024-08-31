@@ -26,7 +26,5 @@ public class CategoriaDespesaService {
         return repository.save(categoriaDespesa);
     }
 
-    public void deleteById(Long id) {
-        repository.deleteById(id);
-    }
+
 }
