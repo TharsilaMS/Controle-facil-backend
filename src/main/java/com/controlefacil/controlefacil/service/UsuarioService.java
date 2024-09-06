@@ -30,17 +30,12 @@ public class UsuarioService {
     }
 
     public Usuario createUsuario(Usuario user) {
-        // Cria o usuário
         Usuario novoUsuario = usuarioRepository.save(user);
-
-        // Define o saldo inicial como zero
         Saldo saldoInicial = new Saldo();
         saldoInicial.setUsuario(novoUsuario);
         saldoInicial.setSaldo(BigDecimal.ZERO);
         saldoInicial.setData(LocalDate.now());
         saldoInicial.setDescricao("Saldo inicial");
-
-        // Salva o saldo inicial
         saldoRepository.save(saldoInicial);
 
         return novoUsuario;

@@ -20,23 +20,15 @@ public class SaldoService {
     private RendaRepository rendaRepository;
 
     public BigDecimal calcularSaldo(Long usuarioId) {
-        // Obtém todas as despesas do usuário
         List<Despesa> despesas = despesaRepository.findByUsuario_IdUsuario(usuarioId);
 
-        // Obtém todas as rendas do usuário
         List<Renda> rendas = rendaRepository.findByUsuario_IdUsuario(usuarioId);
-
-        // Calcula o total das despesas
         BigDecimal totalDespesas = despesas.stream()
                 .map(Despesa::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Calcula o total das rendas
         BigDecimal totalRendas = rendas.stream()
                 .map(Renda::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Calcula o saldo (total de rendas menos total de despesas)
         return totalRendas.subtract(totalDespesas);
     }
 

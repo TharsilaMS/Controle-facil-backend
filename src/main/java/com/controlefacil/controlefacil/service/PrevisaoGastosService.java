@@ -32,7 +32,7 @@ public class PrevisaoGastosService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         previsaoGastos.setUsuario(usuario);
-        previsaoGastos.setDataRevisao(LocalDate.now().withDayOfMonth(1)); // Inicializa com o primeiro dia do mês
+        previsaoGastos.setDataRevisao(LocalDate.now().withDayOfMonth(1));
 
         return previsaoGastosRepository.save(previsaoGastos);
     }
@@ -42,7 +42,7 @@ public class PrevisaoGastosService {
                 .orElseThrow(() -> new ResourceNotFoundException("Previsão de gastos não encontrada para o usuário"));
 
         existing.setLimiteGastos(previsaoGastos.getLimiteGastos());
-        existing.setDataRevisao(LocalDate.now().withDayOfMonth(1)); // Atualiza para o início do mês atual
+        existing.setDataRevisao(LocalDate.now().withDayOfMonth(1));
 
         return previsaoGastosRepository.save(existing);
     }
@@ -66,7 +66,6 @@ public class PrevisaoGastosService {
         BigDecimal totalDespesas = previsaoGastos.getGastosAtuais();
 
         if (totalDespesas.compareTo(previsaoGastos.getLimiteGastos()) > 0) {
-            // Notificar usuário que o limite foi ultrapassado
             System.out.println("O limite de gastos foi ultrapassado!");
         }
     }

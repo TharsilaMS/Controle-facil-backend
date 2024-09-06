@@ -58,15 +58,15 @@ public class DespesaController {
     public ResponseEntity<DespesaDTO> createDespesa(@RequestBody DespesaDTO despesaDTO) {
         try {
             Despesa despesa = new Despesa();
-            despesa.setUsuario(new Usuario(despesaDTO.getUsuarioId())); // Ajuste conforme o construtor adequado
+            despesa.setUsuario(new Usuario(despesaDTO.getUsuarioId()));
             despesa.setDescricao(despesaDTO.getDescricao());
             despesa.setValor(despesaDTO.getValor());
 
             CategoriaDespesa categoriaDespesa = new CategoriaDespesa();
-            categoriaDespesa.setId(despesaDTO.getCategoriaDespesaId()); // Usando setters
+            categoriaDespesa.setId(despesaDTO.getCategoriaDespesaId());
             despesa.setCategoriaDespesa(categoriaDespesa);
 
-            despesa.setTipo(despesaDTO.getTipo());  // Corrigido
+            despesa.setTipo(despesaDTO.getTipo());
             despesa.setData(despesaDTO.getData());
 
             Despesa savedDespesa = despesaService.saveDespesa(despesa);
@@ -92,15 +92,15 @@ public class DespesaController {
         }
         Despesa despesa = new Despesa();
         despesa.setId(id);
-        despesa.setUsuario(new Usuario(despesaDTO.getUsuarioId())); // Ajuste conforme o construtor adequado
+        despesa.setUsuario(new Usuario(despesaDTO.getUsuarioId()));
         despesa.setDescricao(despesaDTO.getDescricao());
         despesa.setValor(despesaDTO.getValor());
 
         CategoriaDespesa categoriaDespesa = new CategoriaDespesa();
-        categoriaDespesa.setId(despesaDTO.getCategoriaDespesaId()); // Usando setters
+        categoriaDespesa.setId(despesaDTO.getCategoriaDespesaId());
         despesa.setCategoriaDespesa(categoriaDespesa);
 
-        despesa.setTipo(despesaDTO.getTipo());  // Corrigido
+        despesa.setTipo(despesaDTO.getTipo());
         despesa.setData(despesaDTO.getData());
 
         Despesa updatedDespesa = despesaService.saveDespesa(despesa);

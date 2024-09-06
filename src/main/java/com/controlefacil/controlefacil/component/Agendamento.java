@@ -21,19 +21,15 @@ public class Agendamento {
     @Autowired
     private UsuarioService usuarioService;
 
-    @Scheduled(cron = "0 0 0 1 * ?") // Executa no primeiro dia de cada mês à meia-noite
+    @Scheduled(cron = "0 0 0 1 * ?")
     public void resetPrevisaoGastos() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();
-
         for (Usuario usuario : usuarios) {
-            // Obtém a previsão de gastos para o usuário
             PrevisaoGastos previsaoGastos = previsaoGastosService.getPrevisaoGastos(usuario.getIdUsuario());
 
-            // Reseta os gastos atuais para o novo mês
             previsaoGastos.setGastosAtuais(BigDecimal.ZERO);
-            previsaoGastos.setDataRevisao(LocalDate.now().withDayOfMonth(1)); // Atualiza a data de revisão para o início do mês
+            previsaoGastos.setDataRevisao(LocalDate.now().withDayOfMonth(1));
 
-            // Salva a previsão de gastos atualizada
             previsaoGastosService.createPrevisaoGastos(previsaoGastos);
         }
     }
