@@ -19,9 +19,10 @@ public class UsuarioDTO {
     private String nome;
     private String email;
     private String senha;
-    private Genero genero; // Alterado para usar o Enum
+    private Genero genero;
     private LocalDate dataNascimento;
     private String ramoAtuacao;
-    private FaixaSalarial faixaSalarial; // Alterado para usar o Enum
+    private FaixaSalarial faixaSalarial;
+
 
 }
