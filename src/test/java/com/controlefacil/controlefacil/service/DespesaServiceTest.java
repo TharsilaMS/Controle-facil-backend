@@ -1,6 +1,6 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
+import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
 import com.controlefacil.controlefacil.model.Despesa;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.DespesaRepository;
@@ -74,7 +74,7 @@ public class DespesaServiceTest {
     public void testSaveDespesa_UserNotFound() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> despesaService.saveDespesa(despesa));
+        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.saveDespesa(despesa));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class DespesaServiceTest {
     public void testUpdateDespesa_NotFound() {
         when(despesaRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> despesaService.updateDespesa(1L, despesa));
+        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.updateDespesa(1L, despesa));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class DespesaServiceTest {
     public void testDeleteDespesa_NotFound() {
         when(despesaRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> despesaService.deleteDespesa(1L));
+        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.deleteDespesa(1L));
     }
 
     @Test

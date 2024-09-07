@@ -2,10 +2,9 @@ package com.controlefacil.controlefacil.controller;
 
 import com.controlefacil.controlefacil.dto.MetaSonhoDTO;
 import com.controlefacil.controlefacil.model.MetaSonho;
-import com.controlefacil.controlefacil.model.Status;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.service.MetaSonhoService;
-import com.controlefacil.controlefacil.util.DateConverter;
+import com.controlefacil.controlefacil.util.ConversorDeData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +45,7 @@ public class MetaSonhoController {
 
     @PostMapping
     public ResponseEntity<MetaSonhoDTO> createMetaSonho(@RequestBody MetaSonhoDTO metaSonhoDTO) {
-        LocalDate prazoDate = DateConverter.parseDate(metaSonhoDTO.getPrazo());
+        LocalDate prazoDate = ConversorDeData.parseDate(metaSonhoDTO.getPrazo());
         LocalDateTime prazoDateTime = LocalDateTime.of(prazoDate, LocalTime.MIDNIGHT);
 
         MetaSonho metaSonho = new MetaSonho();
@@ -67,7 +66,7 @@ public class MetaSonhoController {
     public ResponseEntity<MetaSonhoDTO> updateMetaSonho(@PathVariable Long id, @RequestBody MetaSonhoDTO metaSonhoDTO) {
         try {
             MetaSonho metaSonho = metaSonhoService.getMetaSonhoById(id);
-            LocalDate prazoDate = DateConverter.parseDate(metaSonhoDTO.getPrazo());
+            LocalDate prazoDate = ConversorDeData.parseDate(metaSonhoDTO.getPrazo());
             LocalDateTime prazoDateTime = LocalDateTime.of(prazoDate, LocalTime.MIDNIGHT);
 
             metaSonho.setTitulo(metaSonhoDTO.getTitulo());
@@ -105,7 +104,7 @@ public class MetaSonhoController {
         metaSonhoDTO.setDescricao(metaSonho.getDescricao());
         metaSonhoDTO.setValorAlvo(metaSonho.getValorAlvo());
         metaSonhoDTO.setValorEconomizado(metaSonho.getValorEconomizado());
-        metaSonhoDTO.setPrazo(DateConverter.formatDate(metaSonho.getPrazo().toLocalDate()));
+        metaSonhoDTO.setPrazo(ConversorDeData.formatDate(metaSonho.getPrazo().toLocalDate()));
         metaSonhoDTO.setStatus(metaSonho.getStatus());
         metaSonhoDTO.setUsuarioId(metaSonho.getUsuario().getIdUsuario());
         return metaSonhoDTO;

@@ -5,7 +5,6 @@ import com.controlefacil.controlefacil.model.PrevisaoGastos;
 import com.controlefacil.controlefacil.model.Status;
 import com.controlefacil.controlefacil.repository.MetaSonhosRepository;
 import com.controlefacil.controlefacil.repository.PrevisaoGastosRepository;
-import com.controlefacil.controlefacil.util.DateConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,6 +1,6 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
+import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
 import com.controlefacil.controlefacil.model.Despesa;
 import com.controlefacil.controlefacil.model.PrevisaoGastos;
 import com.controlefacil.controlefacil.model.Usuario;
@@ -132,7 +132,7 @@ public class PrevisaoGastosServiceTest {
     public void testCreatePrevisaoGastosUsuarioNotFound() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> {
+        assertThrows(RecursoNaoEncontradoException.class, () -> {
             previsaoGastosService.createPrevisaoGastos(previsaoGastos);
         });
     }
@@ -142,7 +142,7 @@ public class PrevisaoGastosServiceTest {
         when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> {
+        assertThrows(RecursoNaoEncontradoException.class, () -> {
             previsaoGastosService.updatePrevisaoGastos(1L, previsaoGastos);
         });
     }
@@ -152,7 +152,7 @@ public class PrevisaoGastosServiceTest {
         when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> {
+        assertThrows(RecursoNaoEncontradoException.class, () -> {
             previsaoGastosService.updateGastosAtuais(1L);
         });
     }
@@ -162,7 +162,7 @@ public class PrevisaoGastosServiceTest {
         when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> {
+        assertThrows(RecursoNaoEncontradoException.class, () -> {
             previsaoGastosService.getPrevisaoGastos(1L);
         });
     }

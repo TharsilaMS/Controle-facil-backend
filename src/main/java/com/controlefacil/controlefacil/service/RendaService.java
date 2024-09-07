@@ -1,6 +1,6 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
+import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
 import com.controlefacil.controlefacil.model.Renda;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.RendaRepository;
@@ -36,7 +36,7 @@ public class RendaService {
             throw new IllegalArgumentException("O ID do usuário deve ser fornecido.");
         }
         Usuario usuario = usuarioRepository.findById(renda.getUsuario().getIdUsuario())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o id " + renda.getUsuario().getIdUsuario()));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado com o id " + renda.getUsuario().getIdUsuario()));
         renda.setUsuario(usuario);
         return rendaRepository.save(renda);
     }
@@ -46,14 +46,14 @@ public class RendaService {
             throw new IllegalArgumentException("O ID da renda deve ser fornecido.");
         }
         Renda renda = getRendaById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Renda não encontrada com o id " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Renda não encontrada com o id " + id));
         renda.setDescricao(rendaDetails.getDescricao());
         renda.setValor(rendaDetails.getValor());
         renda.setData(rendaDetails.getData());
 
         if (rendaDetails.getUsuario() != null && rendaDetails.getUsuario().getIdUsuario() != null) {
             Usuario usuario = usuarioRepository.findById(rendaDetails.getUsuario().getIdUsuario())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o id " + rendaDetails.getUsuario().getIdUsuario()));
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado com o id " + rendaDetails.getUsuario().getIdUsuario()));
             renda.setUsuario(usuario);
         }
 
@@ -65,7 +65,7 @@ public class RendaService {
             throw new IllegalArgumentException("O ID da renda deve ser fornecido.");
         }
         Renda renda = getRendaById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Renda não encontrada com o id " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Renda não encontrada com o id " + id));
         rendaRepository.delete(renda);
     }
 }

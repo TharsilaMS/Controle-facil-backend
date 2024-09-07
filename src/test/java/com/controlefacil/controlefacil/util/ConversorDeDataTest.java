@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DateConverterTest {
+public class ConversorDeDataTest {
 
     @Test
     public void testParseDateValid() {
         String dateString = "06/09/2024";
         LocalDate expectedDate = LocalDate.of(2024, 9, 6);
 
-        LocalDate result = DateConverter.parseDate(dateString);
+        LocalDate result = ConversorDeData.parseDate(dateString);
 
         assertEquals(expectedDate, result);
     }
@@ -21,7 +21,7 @@ public class DateConverterTest {
         String dateString = "2024-09-06";
 
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            DateConverter.parseDate(dateString);
+            ConversorDeData.parseDate(dateString);
         });
 
         assertEquals("Data no formato inválido. Use dd/MM/yyyy.", thrown.getMessage());
@@ -32,7 +32,7 @@ public class DateConverterTest {
         String dateString = null;
 
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            DateConverter.parseDate(dateString);
+            ConversorDeData.parseDate(dateString);
         });
 
         assertEquals("Data no formato inválido. Use dd/MM/yyyy.", thrown.getMessage());
@@ -43,7 +43,7 @@ public class DateConverterTest {
         LocalDate date = LocalDate.of(2024, 9, 6);
         String expectedDateString = "06/09/2024";
 
-        String result = DateConverter.formatDate(date);
+        String result = ConversorDeData.formatDate(date);
 
         assertEquals(expectedDateString, result);
     }

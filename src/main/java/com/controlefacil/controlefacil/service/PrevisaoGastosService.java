@@ -1,6 +1,6 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
+import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
 import com.controlefacil.controlefacil.model.Despesa;
 import com.controlefacil.controlefacil.model.PrevisaoGastos;
 import com.controlefacil.controlefacil.model.Usuario;
@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PrevisaoGastosService {
@@ -29,7 +27,7 @@ public class PrevisaoGastosService {
 
     public PrevisaoGastos createPrevisaoGastos(PrevisaoGastos previsaoGastos) {
         Usuario usuario = usuarioRepository.findById(previsaoGastos.getUsuario().getIdUsuario())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         previsaoGastos.setUsuario(usuario);
         previsaoGastos.setDataRevisao(LocalDate.now().withDayOfMonth(1));
@@ -39,7 +37,7 @@ public class PrevisaoGastosService {
 
     public PrevisaoGastos updatePrevisaoGastos(Long usuarioId, PrevisaoGastos previsaoGastos) {
         PrevisaoGastos existing = previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1))
-                .orElseThrow(() -> new ResourceNotFoundException("Previsão de gastos não encontrada para o usuário"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Previsão de gastos não encontrada para o usuário"));
 
         existing.setLimiteGastos(previsaoGastos.getLimiteGastos());
         existing.setDataRevisao(LocalDate.now().withDayOfMonth(1));
@@ -49,7 +47,7 @@ public class PrevisaoGastosService {
 
     public void updateGastosAtuais(Long usuarioId) {
         PrevisaoGastos previsaoGastos = previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1))
-                .orElseThrow(() -> new ResourceNotFoundException("Previsão de gastos não encontrada para o usuário"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Previsão de gastos não encontrada para o usuário"));
 
         BigDecimal totalDespesas = despesaRepository.findByUsuario_IdUsuario(usuarioId).stream()
                 .map(Despesa::getValor)
@@ -61,7 +59,7 @@ public class PrevisaoGastosService {
 
     public void verificarLimite(Long usuarioId) {
         PrevisaoGastos previsaoGastos = previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1))
-                .orElseThrow(() -> new ResourceNotFoundException("Previsão de gastos não encontrada para o usuário"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Previsão de gastos não encontrada para o usuário"));
 
         BigDecimal totalDespesas = previsaoGastos.getGastosAtuais();
 
@@ -72,6 +70,6 @@ public class PrevisaoGastosService {
 
     public PrevisaoGastos getPrevisaoGastos(Long usuarioId) {
         return previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1))
-                .orElseThrow(() -> new ResourceNotFoundException("Previsão de gastos não encontrada para o usuário"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Previsão de gastos não encontrada para o usuário"));
     }
 }

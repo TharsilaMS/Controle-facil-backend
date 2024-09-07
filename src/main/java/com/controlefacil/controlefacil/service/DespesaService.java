@@ -1,6 +1,6 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
+import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
 import com.controlefacil.controlefacil.model.Despesa;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.DespesaRepository;
@@ -30,7 +30,7 @@ public class DespesaService {
 
     public Despesa saveDespesa(Despesa despesa) {
         Usuario usuario = usuarioRepository.findById(despesa.getUsuario().getIdUsuario())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         despesa.setUsuario(usuario);
 
@@ -39,10 +39,10 @@ public class DespesaService {
 
     public Despesa updateDespesa(Long id, Despesa despesaDetails) {
         Despesa despesa = getDespesaById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o id " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Despesa não encontrada com o id " + id));
 
         Usuario usuario = usuarioRepository.findById(despesaDetails.getUsuario().getIdUsuario())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         despesa.setDescricao(despesaDetails.getDescricao());
         despesa.setValor(despesaDetails.getValor());
@@ -56,7 +56,7 @@ public class DespesaService {
 
     public void deleteDespesa(Long id) {
         Despesa despesa = getDespesaById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o id " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Despesa não encontrada com o id " + id));
         despesaRepository.delete(despesa);
     }
 

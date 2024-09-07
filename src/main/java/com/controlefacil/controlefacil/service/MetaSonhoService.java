@@ -5,7 +5,7 @@ import com.controlefacil.controlefacil.model.PrevisaoGastos;
 import com.controlefacil.controlefacil.model.Status;
 import com.controlefacil.controlefacil.repository.MetaSonhosRepository;
 import com.controlefacil.controlefacil.repository.PrevisaoGastosRepository;
-import com.controlefacil.controlefacil.util.DateConverter;
+import com.controlefacil.controlefacil.util.ConversorDeData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -94,7 +94,7 @@ public class MetaSonhoService {
 
 
     public LocalDate convertToLocalDate(String dateString) {
-        return DateConverter.parseDate(dateString);
+        return ConversorDeData.parseDate(dateString);
     }
 
     public LocalDateTime convertToLocalDateTime(LocalDate date) {

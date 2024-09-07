@@ -1,6 +1,6 @@
 package com.controlefacil.controlefacil.service;
 
-import com.controlefacil.controlefacil.exception.ResourceNotFoundException;
+import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
 import com.controlefacil.controlefacil.model.Renda;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.RendaRepository;
@@ -88,7 +88,7 @@ class RendaServiceTest {
     void testSaveRendaWithNonExistentUsuarioThrowsException() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        RecursoNaoEncontradoException exception = assertThrows(RecursoNaoEncontradoException.class, () -> {
             rendaService.saveRenda(renda);
         });
 
@@ -125,7 +125,7 @@ class RendaServiceTest {
     void testDeleteRendaWithNonExistentIdThrowsException() {
         when(rendaRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        RecursoNaoEncontradoException exception = assertThrows(RecursoNaoEncontradoException.class, () -> {
             rendaService.deleteRenda(1L);
         });
 
