@@ -1,6 +1,7 @@
 package com.controlefacil.controlefacil.service;
 
 import com.controlefacil.controlefacil.exception.RecursoNaoEncontradoException;
+import com.controlefacil.controlefacil.model.CategoriaDespesa;
 import com.controlefacil.controlefacil.model.Despesa;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.DespesaRepository;
@@ -31,10 +32,15 @@ public class DespesaServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private CategoriaDespesaService categoriaDespesaService;
+
     private Despesa despesa;
     private Usuario usuario;
+    private CategoriaDespesa categoriaDespesa;
     private UUID usuarioId;
     private UUID despesaId;
+    private UUID categoriaDespesaId;
 
     @BeforeEach
     public void setUp() {
@@ -42,9 +48,14 @@ public class DespesaServiceTest {
 
         usuarioId = UUID.randomUUID();
         despesaId = UUID.randomUUID();
+        categoriaDespesaId = UUID.randomUUID();
 
         usuario = new Usuario();
         usuario.setIdUsuario(usuarioId);
+
+        categoriaDespesa = new CategoriaDespesa();
+        categoriaDespesa.setId(categoriaDespesaId);
+        categoriaDespesa.setNome("Categoria Teste");
 
         despesa = new Despesa();
         despesa.setId(despesaId);
@@ -52,23 +63,30 @@ public class DespesaServiceTest {
         despesa.setValor(BigDecimal.valueOf(100));
         despesa.setData(LocalDate.now());
         despesa.setUsuario(usuario);
+        despesa.setCategoriaDespesa(categoriaDespesa);
     }
 
     @Test
     public void testGetAllDespesas() {
         when(despesaRepository.findAll()).thenReturn(List.of(despesa));
-        assertEquals(1, despesaService.getAllDespesas().size());
+        List<Despesa> despesas = despesaService.getAllDespesas();
+        assertEquals(1, despesas.size());
+        assertEquals(despesa, despesas.get(0));
     }
 
     @Test
     public void testGetDespesaById() {
         when(despesaRepository.findById(despesaId)).thenReturn(Optional.of(despesa));
-        assertEquals(despesa, despesaService.getDespesaById(despesaId).get());
+        Optional<Despesa> result = despesaService.getDespesaById(despesaId);
+        assertTrue(result.isPresent());
+        assertEquals(despesa, result.get());
     }
 
     @Test
     public void testSaveDespesa() {
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(categoriaDespesaService.findByNome(despesa.getCategoriaDespesa().getNome()))
+                .thenReturn(Optional.of(categoriaDespesa));
         when(despesaRepository.save(despesa)).thenReturn(despesa);
 
         Despesa savedDespesa = despesaService.saveDespesa(despesa);
@@ -84,17 +102,34 @@ public class DespesaServiceTest {
     }
 
     @Test
-    public void testUpdateDespesa() {
-        when(despesaRepository.findById(despesaId)).thenReturn(Optional.of(despesa));
+    public void testSaveDespesa_CategoriaNotFound() {
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(categoriaDespesaService.findByNome(despesa.getCategoriaDespesa().getNome()))
+                .thenReturn(Optional.empty());
+        when(categoriaDespesaService.save(any(CategoriaDespesa.class)))
+                .thenReturn(categoriaDespesa);
         when(despesaRepository.save(despesa)).thenReturn(despesa);
 
+        Despesa savedDespesa = despesaService.saveDespesa(despesa);
+        assertNotNull(savedDespesa);
+        assertEquals(despesa, savedDespesa);
+    }
+
+    @Test
+    public void testUpdateDespesa() {
         Despesa updatedDespesa = new Despesa();
         updatedDespesa.setId(despesaId);
         updatedDespesa.setDescricao("Despesa Atualizada");
         updatedDespesa.setValor(BigDecimal.valueOf(150));
         updatedDespesa.setData(LocalDate.now());
         updatedDespesa.setUsuario(usuario);
+        updatedDespesa.setCategoriaDespesa(categoriaDespesa);
+
+        when(despesaRepository.findById(despesaId)).thenReturn(Optional.of(despesa));
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(categoriaDespesaService.findByNome(updatedDespesa.getCategoriaDespesa().getNome()))
+                .thenReturn(Optional.of(categoriaDespesa));
+        when(despesaRepository.save(updatedDespesa)).thenReturn(updatedDespesa);
 
         Despesa result = despesaService.updateDespesa(despesaId, updatedDespesa);
         assertEquals("Despesa Atualizada", result.getDescricao());
@@ -126,6 +161,8 @@ public class DespesaServiceTest {
     @Test
     public void testGetDespesasByUsuarioId() {
         when(despesaRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(List.of(despesa));
-        assertEquals(1, despesaService.getDespesasByUsuarioId(usuarioId).size());
+        List<Despesa> despesas = despesaService.getDespesasByUsuarioId(usuarioId);
+        assertEquals(1, despesas.size());
+        assertEquals(despesa, despesas.get(0));
     }
 }

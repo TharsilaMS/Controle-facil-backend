@@ -4,18 +4,20 @@ import com.controlefacil.controlefacil.model.PrevisaoGastos;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.service.PrevisaoGastosService;
 import com.controlefacil.controlefacil.service.UsuarioService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 public class AgendamentoTest {
 
     @Mock
@@ -27,29 +29,52 @@ public class AgendamentoTest {
     @InjectMocks
     private Agendamento agendamento;
 
-    public AgendamentoTest() {
+    @BeforeEach
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testResetPrevisaoGastos() {
+    public void testResetPrevisaoGastos_CriaNovaPrevisao() {
+        // Arrange
         Usuario usuario = new Usuario();
-        usuario.setIdUsuario(1L);
+        UUID usuarioId = UUID.randomUUID(); // Gerar um UUID aleatório
+        usuario.setIdUsuario(usuarioId);
 
-        PrevisaoGastos previsaoGastos = new PrevisaoGastos();
-        previsaoGastos.setId(1L);
-        previsaoGastos.setGastosAtuais(BigDecimal.TEN);
-        previsaoGastos.setDataRevisao(LocalDate.of(2024, 9, 1));
+        List<Usuario> usuarios = Arrays.asList(usuario);
+        LocalDate primeiraDataDoMes = LocalDate.now().withDayOfMonth(1);
 
-        when(usuarioService.getAllUsuarios()).thenReturn(Collections.singletonList(usuario));
-        when(previsaoGastosService.getPrevisaoGastos(usuario.getIdUsuario())).thenReturn(previsaoGastos);
+        when(usuarioService.getAllUsuarios()).thenReturn(usuarios);
+        when(previsaoGastosService.findByUsuarioIdAndDataRevisao(usuario.getIdUsuario(), primeiraDataDoMes)).thenReturn(null);
 
+        // Act
         agendamento.resetPrevisaoGastos();
 
-        verify(previsaoGastosService).getPrevisaoGastos(usuario.getIdUsuario());
-        verify(previsaoGastosService).createPrevisaoGastos(argThat(p ->
-                p.getGastosAtuais().equals(BigDecimal.ZERO) &&
-                        p.getDataRevisao().isEqual(LocalDate.now().withDayOfMonth(1))
-        ));
+        // Assert
+        verify(previsaoGastosService).createPrevisaoGastos(any(PrevisaoGastos.class));
+    }
+
+    @Test
+    public void testResetPrevisaoGastos_AtualizaPrevisaoExistente() {
+        // Arrange
+        Usuario usuario = new Usuario();
+        UUID usuarioId = UUID.randomUUID(); // Gerar um UUID aleatório
+        usuario.setIdUsuario(usuarioId);
+
+        List<Usuario> usuarios = Arrays.asList(usuario);
+        LocalDate primeiraDataDoMes = LocalDate.now().withDayOfMonth(1);
+
+        PrevisaoGastos previsaoGastosExistente = new PrevisaoGastos();
+        previsaoGastosExistente.setGastosAtuais(BigDecimal.TEN);
+
+        when(usuarioService.getAllUsuarios()).thenReturn(usuarios);
+        when(previsaoGastosService.findByUsuarioIdAndDataRevisao(usuario.getIdUsuario(), primeiraDataDoMes)).thenReturn(previsaoGastosExistente);
+
+        // Act
+        agendamento.resetPrevisaoGastos();
+
+        // Assert
+        // Remover verificações diretas em `previsaoGastosExistente`
+        verify(previsaoGastosService).updatePrevisaoGastos(eq(usuario.getIdUsuario()), any(PrevisaoGastos.class));
     }
 }

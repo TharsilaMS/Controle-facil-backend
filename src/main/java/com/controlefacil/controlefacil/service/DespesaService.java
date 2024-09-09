@@ -35,24 +35,17 @@ public class DespesaService {
     }
 
     public Despesa saveDespesa(Despesa despesa) {
-        // Verificar se o usuário existe
+
         Usuario usuario = usuarioRepository.findById(despesa.getUsuario().getIdUsuario())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
-
-        // Verificar se a categoria já existe, senão criar uma nova
         CategoriaDespesa categoria = categoriaDespesaService.findByNome(despesa.getCategoriaDespesa().getNome())
                 .orElseGet(() -> {
-                    // Se a categoria não existir, crie uma nova
                     CategoriaDespesa novaCategoria = new CategoriaDespesa();
                     novaCategoria.setNome(despesa.getCategoriaDespesa().getNome());
-                    return categoriaDespesaService.save(novaCategoria); // Aqui garantimos que a categoria seja salva
+                    return categoriaDespesaService.save(novaCategoria);
                 });
-
-        // Associar o usuário e a categoria à despesa
         despesa.setUsuario(usuario);
         despesa.setCategoriaDespesa(categoria);
-
-        // Salvar a despesa
         return despesaRepository.save(despesa);
     }
 

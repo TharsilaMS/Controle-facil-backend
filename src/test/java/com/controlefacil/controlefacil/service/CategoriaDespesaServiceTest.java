@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class CategoriaDespesaServiceTest {
 
@@ -51,11 +49,51 @@ public class CategoriaDespesaServiceTest {
     @Test
     public void testSave() {
         CategoriaDespesa categoria = new CategoriaDespesa();
+        categoria.setNome("Categoria Teste");
+
+        when(repository.findByNome(categoria.getNome())).thenReturn(Optional.empty());
         when(repository.save(categoria)).thenReturn(categoria);
 
         CategoriaDespesa result = categoriaDespesaService.save(categoria);
         assertNotNull(result);
         assertEquals(categoria, result);
         verify(repository, times(1)).save(categoria);
+    }
+
+    @Test
+    public void testSaveCategoriaExistente() {
+        CategoriaDespesa categoria = new CategoriaDespesa();
+        categoria.setNome("Categoria Teste");
+
+        when(repository.findByNome(categoria.getNome())).thenReturn(Optional.of(categoria));
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            categoriaDespesaService.save(categoria);
+        });
+
+        assertEquals("Categoria com o nome 'Categoria Teste' já existe.", thrown.getMessage());
+        verify(repository, never()).save(categoria);
+    }
+
+    @Test
+    public void testIsCategoriaExistente() {
+        String nomeCategoria = "Categoria Teste";
+        CategoriaDespesa categoria = new CategoriaDespesa();
+        categoria.setNome(nomeCategoria);
+
+        when(repository.findByNome(nomeCategoria)).thenReturn(Optional.of(categoria));
+
+        assertTrue(categoriaDespesaService.isCategoriaExistente(nomeCategoria));
+        verify(repository, times(1)).findByNome(nomeCategoria);
+    }
+
+    @Test
+    public void testIsCategoriaExistenteNaoEncontrada() {
+        String nomeCategoria = "Categoria Teste";
+
+        when(repository.findByNome(nomeCategoria)).thenReturn(Optional.empty());
+
+        assertFalse(categoriaDespesaService.isCategoriaExistente(nomeCategoria));
+        verify(repository, times(1)).findByNome(nomeCategoria);
     }
 }

@@ -1,8 +1,10 @@
 package com.controlefacil.controlefacil.service;
 
+import com.controlefacil.controlefacil.exception.MetaAtivaExistenteException;
 import com.controlefacil.controlefacil.model.MetaSonho;
 import com.controlefacil.controlefacil.model.PrevisaoGastos;
 import com.controlefacil.controlefacil.model.Status;
+import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.MetaSonhosRepository;
 import com.controlefacil.controlefacil.repository.PrevisaoGastosRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,14 +67,21 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testUpdateMetaSonho() {
-        UUID id = UUID.randomUUID();
+        UUID id = metaSonho.getId();
+        MetaSonho updatedMetaSonho = new MetaSonho();
+        updatedMetaSonho.setId(id);
+        updatedMetaSonho.setTitulo("Meta Atualizada");
+        updatedMetaSonho.setValorAlvo(new BigDecimal("600.00"));
+        updatedMetaSonho.setValorEconomizado(new BigDecimal("100.00"));
+        updatedMetaSonho.setStatus(Status.ATIVA);
+
         when(metaSonhoRepository.existsById(id)).thenReturn(true);
-        when(metaSonhoRepository.save(metaSonho)).thenReturn(metaSonho);
+        when(metaSonhoRepository.save(updatedMetaSonho)).thenReturn(updatedMetaSonho);
 
-        MetaSonho result = metaSonhoService.updateMetaSonho(id, metaSonho);
+        MetaSonho result = metaSonhoService.updateMetaSonho(id, updatedMetaSonho);
 
-        assertEquals(metaSonho, result);
-        verify(metaSonhoRepository).save(metaSonho);
+        assertEquals(updatedMetaSonho, result);
+        verify(metaSonhoRepository).save(updatedMetaSonho);
     }
 
     @Test
@@ -89,7 +98,7 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testGetMetaSonhoById() {
-        UUID id = UUID.randomUUID();
+        UUID id = metaSonho.getId();
         when(metaSonhoRepository.findById(id)).thenReturn(Optional.of(metaSonho));
 
         MetaSonho result = metaSonhoService.getMetaSonhoById(id);
@@ -122,7 +131,7 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testDeleteMetaSonho() {
-        UUID id = UUID.randomUUID();
+        UUID id = metaSonho.getId();
         when(metaSonhoRepository.existsById(id)).thenReturn(true);
 
         metaSonhoService.deleteMetaSonho(id);
@@ -145,8 +154,11 @@ public class MetaSonhoServiceTest {
     @Test
     public void testVerificarEconomiaEGuardar() {
         UUID usuarioId = UUID.randomUUID();
+        metaSonho.setUsuario(new Usuario(usuarioId));  // Assuming Usuario is a class with UUID as ID
+
         when(previsaoGastosRepository.findById(usuarioId)).thenReturn(Optional.of(previsaoGastos));
-        when(metaSonhoRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(List.of(metaSonho));
+        when(metaSonhoRepository.findByUsuario_IdUsuarioAndStatus(usuarioId, Status.ATIVA))
+                .thenReturn(List.of(metaSonho));
         when(metaSonhoRepository.save(metaSonho)).thenReturn(metaSonho);
 
         String result = metaSonhoService.verificarEconomiaEGuardar(usuarioId);
@@ -160,7 +172,8 @@ public class MetaSonhoServiceTest {
     public void testVerificarEconomiaEGuardarSemMeta() {
         UUID usuarioId = UUID.randomUUID();
         when(previsaoGastosRepository.findById(usuarioId)).thenReturn(Optional.of(previsaoGastos));
-        when(metaSonhoRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(Collections.emptyList());
+        when(metaSonhoRepository.findByUsuario_IdUsuarioAndStatus(usuarioId, Status.ATIVA))
+                .thenReturn(Collections.emptyList());
 
         String result = metaSonhoService.verificarEconomiaEGuardar(usuarioId);
 

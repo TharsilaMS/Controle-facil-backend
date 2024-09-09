@@ -122,10 +122,6 @@ public class PrevisaoGastosServiceTest {
                 .thenReturn(Optional.of(previsaoGastos));
 
         previsaoGastosService.verificarLimite(usuarioId);
-
-        // Aqui, verificamos se o método printou a mensagem no console
-        // Para isso, podemos usar um sistema de capturas, ou apenas validar que o método foi chamado
-        // No exemplo abaixo, o comportamento é apenas registrado
     }
 
     @Test

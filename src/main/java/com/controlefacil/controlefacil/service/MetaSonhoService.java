@@ -28,7 +28,7 @@ public class MetaSonhoService {
     private PrevisaoGastosRepository previsaoGastosRepository;
 
     public MetaSonho createMetaSonho(MetaSonho metaSonho) {
-        // Verifique se o usuário já tem uma meta ativa
+
         List<MetaSonho> metasAtivas = metaSonhoRepository.findByUsuario_IdUsuarioAndStatus(
                 metaSonho.getUsuario().getIdUsuario(),
                 Status.ATIVA
@@ -45,8 +45,6 @@ public class MetaSonhoService {
         if (metaSonhoRepository.existsById(id)) {
             MetaSonho metaExistente = metaSonhoRepository.findById(id).orElseThrow(() ->
                     new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
-
-            // Atualize apenas se a meta está concluída ou se for a mesma meta
             if (metaExistente.getStatus() != Status.CONCLUIDA && !metaExistente.getId().equals(metaSonho.getId())) {
                 throw new RuntimeException("Não é permitido atualizar a meta ativa. Conclua a meta atual antes de atualizar.");
             }

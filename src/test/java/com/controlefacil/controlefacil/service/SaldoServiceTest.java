@@ -44,19 +44,19 @@ public class SaldoServiceTest {
 
         despesa1 = new Despesa();
         despesa1.setValor(new BigDecimal("50.00"));
-        despesa1.setUsuario(new Usuario(usuarioId));  // Associa o usuário à despesa
+        despesa1.setUsuario(new Usuario(usuarioId));
 
         despesa2 = new Despesa();
         despesa2.setValor(new BigDecimal("30.00"));
-        despesa2.setUsuario(new Usuario(usuarioId));  // Associa o usuário à despesa
+        despesa2.setUsuario(new Usuario(usuarioId));
 
         renda1 = new Renda();
         renda1.setValor(new BigDecimal("100.00"));
-        renda1.setUsuario(new Usuario(usuarioId));  // Associa o usuário à renda
+        renda1.setUsuario(new Usuario(usuarioId));
 
         renda2 = new Renda();
         renda2.setValor(new BigDecimal("200.00"));
-        renda2.setUsuario(new Usuario(usuarioId));  // Associa o usuário à renda
+        renda2.setUsuario(new Usuario(usuarioId));
     }
 
     @Test
