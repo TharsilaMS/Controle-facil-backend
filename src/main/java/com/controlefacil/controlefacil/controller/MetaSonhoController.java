@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +26,7 @@ public class MetaSonhoController {
     private MetaSonhoService metaSonhoService;
 
     @GetMapping
-    public ResponseEntity<List<MetaSonhoDTO>> getAllMetasSonho(@RequestParam Long usuarioId) {
+    public ResponseEntity<List<MetaSonhoDTO>> getAllMetasSonho(@RequestParam UUID usuarioId) {
         List<MetaSonhoDTO> metaSonhoDTOs = metaSonhoService.getAllMetaSonhosByUsuarioId(usuarioId)
                 .stream()
                 .map(this::convertToDTO)
@@ -34,7 +35,7 @@ public class MetaSonhoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MetaSonhoDTO> getMetaSonhoById(@PathVariable Long id) {
+    public ResponseEntity<MetaSonhoDTO> getMetaSonhoById(@PathVariable UUID id) {
         try {
             MetaSonho metaSonho = metaSonhoService.getMetaSonhoById(id);
             return ResponseEntity.ok(convertToDTO(metaSonho));
@@ -63,7 +64,7 @@ public class MetaSonhoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MetaSonhoDTO> updateMetaSonho(@PathVariable Long id, @RequestBody MetaSonhoDTO metaSonhoDTO) {
+    public ResponseEntity<MetaSonhoDTO> updateMetaSonho(@PathVariable UUID id, @RequestBody MetaSonhoDTO metaSonhoDTO) {
         try {
             MetaSonho metaSonho = metaSonhoService.getMetaSonhoById(id);
             LocalDate prazoDate = ConversorDeData.parseDate(metaSonhoDTO.getPrazo());
@@ -72,7 +73,7 @@ public class MetaSonhoController {
             metaSonho.setTitulo(metaSonhoDTO.getTitulo());
             metaSonho.setDescricao(metaSonhoDTO.getDescricao());
             metaSonho.setValorAlvo(metaSonhoDTO.getValorAlvo());
-            metaSonho.setValorTotal(metaSonhoDTO.getValorAlvo()); // Atualize valor total com valor alvo
+            metaSonho.setValorTotal(metaSonhoDTO.getValorAlvo());
             metaSonho.setPrazo(prazoDateTime);
             metaSonho.setUsuario(new Usuario(metaSonhoDTO.getUsuarioId()));
 
@@ -84,7 +85,7 @@ public class MetaSonhoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMetaSonho(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteMetaSonho(@PathVariable UUID id) {
         try {
             metaSonhoService.deleteMetaSonho(id);
             return ResponseEntity.noContent().build();
@@ -93,7 +94,7 @@ public class MetaSonhoController {
         }
     }
     @PostMapping("/verificar-economia/{usuarioId}")
-    public String verificarEconomiaEGuardar(@PathVariable Long usuarioId) {
+    public String verificarEconomiaEGuardar(@PathVariable UUID usuarioId) {
         return metaSonhoService.verificarEconomiaEGuardar(usuarioId);
     }
 

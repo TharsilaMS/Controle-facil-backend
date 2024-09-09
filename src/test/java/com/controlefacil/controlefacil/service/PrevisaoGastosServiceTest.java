@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,15 +42,21 @@ public class PrevisaoGastosServiceTest {
     private Despesa despesa1;
     private Despesa despesa2;
 
+    private UUID usuarioId;
+    private UUID previsaoGastosId;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Inicializa os objetos com valores de exemplo
+        usuarioId = UUID.randomUUID();
+        previsaoGastosId = UUID.randomUUID();
+
         usuario = new Usuario();
-        usuario.setIdUsuario(1L);
+        usuario.setIdUsuario(usuarioId);
 
         previsaoGastos = new PrevisaoGastos();
+        previsaoGastos.setId(previsaoGastosId);
         previsaoGastos.setUsuario(usuario);
         previsaoGastos.setLimiteGastos(new BigDecimal("200.00"));
         previsaoGastos.setGastosAtuais(BigDecimal.ZERO);
@@ -57,14 +64,16 @@ public class PrevisaoGastosServiceTest {
 
         despesa1 = new Despesa();
         despesa1.setValor(new BigDecimal("50.00"));
+        despesa1.setUsuario(usuario);
 
         despesa2 = new Despesa();
         despesa2.setValor(new BigDecimal("30.00"));
+        despesa2.setUsuario(usuario);
     }
 
     @Test
     public void testCreatePrevisaoGastos() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(previsaoGastosRepository.save(previsaoGastos)).thenReturn(previsaoGastos);
 
         PrevisaoGastos result = previsaoGastosService.createPrevisaoGastos(previsaoGastos);
@@ -76,14 +85,15 @@ public class PrevisaoGastosServiceTest {
     @Test
     public void testUpdatePrevisaoGastos() {
         PrevisaoGastos updatedPrevisao = new PrevisaoGastos();
+        updatedPrevisao.setId(previsaoGastosId);
         updatedPrevisao.setLimiteGastos(new BigDecimal("300.00"));
         updatedPrevisao.setDataRevisao(LocalDate.now().withDayOfMonth(1));
 
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.of(previsaoGastos));
         when(previsaoGastosRepository.save(previsaoGastos)).thenReturn(previsaoGastos);
 
-        PrevisaoGastos result = previsaoGastosService.updatePrevisaoGastos(1L, updatedPrevisao);
+        PrevisaoGastos result = previsaoGastosService.updatePrevisaoGastos(usuarioId, updatedPrevisao);
 
         assertEquals(new BigDecimal("300.00"), result.getLimiteGastos());
         verify(previsaoGastosRepository).save(previsaoGastos);
@@ -93,12 +103,12 @@ public class PrevisaoGastosServiceTest {
     public void testUpdateGastosAtuais() {
         previsaoGastos.setGastosAtuais(BigDecimal.ZERO);
 
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.of(previsaoGastos));
-        when(despesaRepository.findByUsuario_IdUsuario(1L))
+        when(despesaRepository.findByUsuario_IdUsuario(usuarioId))
                 .thenReturn(List.of(despesa1, despesa2));
 
-        previsaoGastosService.updateGastosAtuais(1L);
+        previsaoGastosService.updateGastosAtuais(usuarioId);
 
         verify(previsaoGastosRepository).save(previsaoGastos);
         assertEquals(new BigDecimal("80.00"), previsaoGastos.getGastosAtuais());
@@ -108,10 +118,10 @@ public class PrevisaoGastosServiceTest {
     public void testVerificarLimite() {
         previsaoGastos.setGastosAtuais(new BigDecimal("220.00"));
 
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.of(previsaoGastos));
 
-        previsaoGastosService.verificarLimite(1L);
+        previsaoGastosService.verificarLimite(usuarioId);
 
         // Aqui, verificamos se o método printou a mensagem no console
         // Para isso, podemos usar um sistema de capturas, ou apenas validar que o método foi chamado
@@ -120,17 +130,17 @@ public class PrevisaoGastosServiceTest {
 
     @Test
     public void testGetPrevisaoGastos() {
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.of(previsaoGastos));
 
-        PrevisaoGastos result = previsaoGastosService.getPrevisaoGastos(1L);
+        PrevisaoGastos result = previsaoGastosService.getPrevisaoGastos(usuarioId);
 
         assertEquals(previsaoGastos, result);
     }
 
     @Test
     public void testCreatePrevisaoGastosUsuarioNotFound() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> {
             previsaoGastosService.createPrevisaoGastos(previsaoGastos);
@@ -139,31 +149,31 @@ public class PrevisaoGastosServiceTest {
 
     @Test
     public void testUpdatePrevisaoGastosNotFound() {
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> {
-            previsaoGastosService.updatePrevisaoGastos(1L, previsaoGastos);
+            previsaoGastosService.updatePrevisaoGastos(usuarioId, previsaoGastos);
         });
     }
 
     @Test
     public void testUpdateGastosAtuaisNotFound() {
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> {
-            previsaoGastosService.updateGastosAtuais(1L);
+            previsaoGastosService.updateGastosAtuais(usuarioId);
         });
     }
 
     @Test
     public void testGetPrevisaoGastosNotFound() {
-        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(1L, LocalDate.now().withDayOfMonth(1)))
+        when(previsaoGastosRepository.findByUsuario_IdUsuarioAndDataRevisao(usuarioId, LocalDate.now().withDayOfMonth(1)))
                 .thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> {
-            previsaoGastosService.getPrevisaoGastos(1L);
+            previsaoGastosService.getPrevisaoGastos(usuarioId);
         });
     }
 }

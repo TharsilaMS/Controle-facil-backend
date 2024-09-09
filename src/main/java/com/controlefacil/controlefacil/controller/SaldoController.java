@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/saldos")
@@ -20,19 +20,19 @@ public class SaldoController {
     private SaldoService saldoService;
 
     @GetMapping("/{usuarioId}")
-    public ResponseEntity<SaldoDTO> getSaldo(@PathVariable Long usuarioId) {
+    public ResponseEntity<SaldoDTO> getSaldo(@PathVariable UUID usuarioId) {
         BigDecimal saldo = saldoService.calcularSaldo(usuarioId);
         return ResponseEntity.ok(new SaldoDTO(null, usuarioId, saldo));
     }
 
     @GetMapping("/despesas/{usuarioId}")
-    public ResponseEntity<List<Despesa>> getDespesasByUsuario(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<Despesa>> getDespesasByUsuario(@PathVariable UUID usuarioId) {
         List<Despesa> despesas = saldoService.getDespesasByUsuario(usuarioId);
         return ResponseEntity.ok(despesas);
     }
 
     @GetMapping("/rendas/{usuarioId}")
-    public ResponseEntity<List<Renda>> getRendasByUsuario(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<Renda>> getRendasByUsuario(@PathVariable UUID usuarioId) {
         List<Renda> rendas = saldoService.getRendasByUsuario(usuarioId);
         return ResponseEntity.ok(rendas);
     }

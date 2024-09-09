@@ -6,13 +6,14 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Setter
 @Getter
 @AllArgsConstructor
 public class RendaDTO {
-    private Long id;
-    private Long usuarioId;
+    private UUID id;
+    private UUID usuarioId;
     private String descricao;
     private BigDecimal valor;
     private LocalDate data;

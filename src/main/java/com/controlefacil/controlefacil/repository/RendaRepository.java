@@ -5,9 +5,10 @@ import com.controlefacil.controlefacil.model.Renda;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface RendaRepository extends JpaRepository<Renda, Long> {
-    List<Renda> findByUsuario_IdUsuario(Long idUsuario);
+public interface RendaRepository extends JpaRepository<Renda, UUID> {
+    List<Renda> findByUsuario_IdUsuario(UUID idUsuario);
 }
 
 

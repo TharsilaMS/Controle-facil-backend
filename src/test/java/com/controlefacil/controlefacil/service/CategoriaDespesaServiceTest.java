@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -37,7 +38,7 @@ public class CategoriaDespesaServiceTest {
 
     @Test
     public void testFindById() {
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         CategoriaDespesa categoria = new CategoriaDespesa();
         when(repository.findById(id)).thenReturn(Optional.of(categoria));
 

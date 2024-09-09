@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "usuario")
@@ -15,9 +16,9 @@ import java.time.LocalDateTime;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_usuario")
-    private Long idUsuario;
+    private UUID idUsuario;
 
     @Column(nullable = false)
     private String nome;
@@ -44,7 +45,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(name = "faixa_salarial")
     private FaixaSalarial faixaSalarial;
-    public Usuario(Long idUsuario) {
+    public Usuario(UUID idUsuario) {
         this.idUsuario = idUsuario;
     }
 }

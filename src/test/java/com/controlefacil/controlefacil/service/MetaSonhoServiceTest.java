@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -41,7 +42,7 @@ public class MetaSonhoServiceTest {
         MockitoAnnotations.openMocks(this);
 
         metaSonho = new MetaSonho();
-        metaSonho.setId(1L);
+        metaSonho.setId(UUID.randomUUID());
         metaSonho.setTitulo("Meta de Viagem");
         metaSonho.setValorAlvo(new BigDecimal("500.00"));
         metaSonho.setValorEconomizado(BigDecimal.ZERO);
@@ -64,10 +65,11 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testUpdateMetaSonho() {
-        when(metaSonhoRepository.existsById(1L)).thenReturn(true);
+        UUID id = UUID.randomUUID();
+        when(metaSonhoRepository.existsById(id)).thenReturn(true);
         when(metaSonhoRepository.save(metaSonho)).thenReturn(metaSonho);
 
-        MetaSonho result = metaSonhoService.updateMetaSonho(1L, metaSonho);
+        MetaSonho result = metaSonhoService.updateMetaSonho(id, metaSonho);
 
         assertEquals(metaSonho, result);
         verify(metaSonhoRepository).save(metaSonho);
@@ -75,40 +77,44 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testUpdateMetaSonhoNotFound() {
-        when(metaSonhoRepository.existsById(1L)).thenReturn(false);
+        UUID id = UUID.randomUUID();
+        when(metaSonhoRepository.existsById(id)).thenReturn(false);
 
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            metaSonhoService.updateMetaSonho(1L, metaSonho);
+            metaSonhoService.updateMetaSonho(id, metaSonho);
         });
 
-        assertEquals("Meta de Sonho não encontrada com ID: 1", thrown.getMessage());
+        assertEquals("Meta de Sonho não encontrada com ID: " + id, thrown.getMessage());
     }
 
     @Test
     public void testGetMetaSonhoById() {
-        when(metaSonhoRepository.findById(1L)).thenReturn(Optional.of(metaSonho));
+        UUID id = UUID.randomUUID();
+        when(metaSonhoRepository.findById(id)).thenReturn(Optional.of(metaSonho));
 
-        MetaSonho result = metaSonhoService.getMetaSonhoById(1L);
+        MetaSonho result = metaSonhoService.getMetaSonhoById(id);
 
         assertEquals(metaSonho, result);
     }
 
     @Test
     public void testGetMetaSonhoByIdNotFound() {
-        when(metaSonhoRepository.findById(1L)).thenReturn(Optional.empty());
+        UUID id = UUID.randomUUID();
+        when(metaSonhoRepository.findById(id)).thenReturn(Optional.empty());
 
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            metaSonhoService.getMetaSonhoById(1L);
+            metaSonhoService.getMetaSonhoById(id);
         });
 
-        assertEquals("Meta de Sonho não encontrada com ID: 1", thrown.getMessage());
+        assertEquals("Meta de Sonho não encontrada com ID: " + id, thrown.getMessage());
     }
 
     @Test
     public void testGetAllMetaSonhosByUsuarioId() {
-        when(metaSonhoRepository.findByUsuario_IdUsuario(1L)).thenReturn(List.of(metaSonho));
+        UUID usuarioId = UUID.randomUUID();
+        when(metaSonhoRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(List.of(metaSonho));
 
-        List<MetaSonho> result = metaSonhoService.getAllMetaSonhosByUsuarioId(1L);
+        List<MetaSonho> result = metaSonhoService.getAllMetaSonhosByUsuarioId(usuarioId);
 
         assertEquals(1, result.size());
         assertEquals(metaSonho, result.get(0));
@@ -116,31 +122,34 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testDeleteMetaSonho() {
-        when(metaSonhoRepository.existsById(1L)).thenReturn(true);
+        UUID id = UUID.randomUUID();
+        when(metaSonhoRepository.existsById(id)).thenReturn(true);
 
-        metaSonhoService.deleteMetaSonho(1L);
+        metaSonhoService.deleteMetaSonho(id);
 
-        verify(metaSonhoRepository).deleteById(1L);
+        verify(metaSonhoRepository).deleteById(id);
     }
 
     @Test
     public void testDeleteMetaSonhoNotFound() {
-        when(metaSonhoRepository.existsById(1L)).thenReturn(false);
+        UUID id = UUID.randomUUID();
+        when(metaSonhoRepository.existsById(id)).thenReturn(false);
 
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            metaSonhoService.deleteMetaSonho(1L);
+            metaSonhoService.deleteMetaSonho(id);
         });
 
-        assertEquals("Meta de Sonho não encontrada com ID: 1", thrown.getMessage());
+        assertEquals("Meta de Sonho não encontrada com ID: " + id, thrown.getMessage());
     }
 
     @Test
     public void testVerificarEconomiaEGuardar() {
-        when(previsaoGastosRepository.findById(1L)).thenReturn(Optional.of(previsaoGastos));
-        when(metaSonhoRepository.findByUsuario_IdUsuario(1L)).thenReturn(List.of(metaSonho));
+        UUID usuarioId = UUID.randomUUID();
+        when(previsaoGastosRepository.findById(usuarioId)).thenReturn(Optional.of(previsaoGastos));
+        when(metaSonhoRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(List.of(metaSonho));
         when(metaSonhoRepository.save(metaSonho)).thenReturn(metaSonho);
 
-        String result = metaSonhoService.verificarEconomiaEGuardar(1L);
+        String result = metaSonhoService.verificarEconomiaEGuardar(usuarioId);
 
         assertEquals("Você economizou R$ 200.00. Esse valor foi adicionado à sua meta de sonho: Meta de Viagem.", result);
         assertEquals(new BigDecimal("200.00"), metaSonho.getValorEconomizado());
@@ -149,10 +158,11 @@ public class MetaSonhoServiceTest {
 
     @Test
     public void testVerificarEconomiaEGuardarSemMeta() {
-        when(previsaoGastosRepository.findById(1L)).thenReturn(Optional.of(previsaoGastos));
-        when(metaSonhoRepository.findByUsuario_IdUsuario(1L)).thenReturn(Collections.emptyList());
+        UUID usuarioId = UUID.randomUUID();
+        when(previsaoGastosRepository.findById(usuarioId)).thenReturn(Optional.of(previsaoGastos));
+        when(metaSonhoRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(Collections.emptyList());
 
-        String result = metaSonhoService.verificarEconomiaEGuardar(1L);
+        String result = metaSonhoService.verificarEconomiaEGuardar(usuarioId);
 
         assertEquals("Você economizou R$ 200.00, mas não há metas de sonho definidas.", result);
     }
@@ -161,18 +171,20 @@ public class MetaSonhoServiceTest {
     public void testVerificarEconomiaEGuardarSemEconomia() {
         previsaoGastos.setGastosAtuais(new BigDecimal("600.00"));
 
-        when(previsaoGastosRepository.findById(1L)).thenReturn(Optional.of(previsaoGastos));
+        UUID usuarioId = UUID.randomUUID();
+        when(previsaoGastosRepository.findById(usuarioId)).thenReturn(Optional.of(previsaoGastos));
 
-        String result = metaSonhoService.verificarEconomiaEGuardar(1L);
+        String result = metaSonhoService.verificarEconomiaEGuardar(usuarioId);
 
         assertEquals("Não há economia para guardar este mês.", result);
     }
 
     @Test
     public void testVerificarEconomiaEGuardarPrevisaoNotFound() {
-        when(previsaoGastosRepository.findById(1L)).thenReturn(Optional.empty());
+        UUID usuarioId = UUID.randomUUID();
+        when(previsaoGastosRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
-        String result = metaSonhoService.verificarEconomiaEGuardar(1L);
+        String result = metaSonhoService.verificarEconomiaEGuardar(usuarioId);
 
         assertEquals("Previsão de gastos não encontrada para o usuário.", result);
     }

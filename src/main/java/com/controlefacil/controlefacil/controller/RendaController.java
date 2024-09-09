@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/rendas")
@@ -31,7 +32,7 @@ public class RendaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RendaDTO> getRendaById(@PathVariable Long id) {
+    public ResponseEntity<RendaDTO> getRendaById(@PathVariable UUID id) {
         Optional<Renda> renda = rendaService.getRendaById(id);
         return renda.map(this::convertToDTO)
                 .map(ResponseEntity::ok)
@@ -54,7 +55,7 @@ public class RendaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RendaDTO> updateRenda(@PathVariable Long id, @RequestBody RendaDTO rendaDTO) {
+    public ResponseEntity<RendaDTO> updateRenda(@PathVariable UUID id, @RequestBody RendaDTO rendaDTO) {
         Optional<Renda> existingRenda = rendaService.getRendaById(id);
         if (existingRenda.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -69,7 +70,7 @@ public class RendaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRenda(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRenda(@PathVariable UUID id) {
         Optional<Renda> existingRenda = rendaService.getRendaById(id);
         if (existingRenda.isEmpty()) {
             return ResponseEntity.notFound().build();

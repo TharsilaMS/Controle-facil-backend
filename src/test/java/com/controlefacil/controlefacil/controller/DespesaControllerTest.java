@@ -20,10 +20,10 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig
@@ -42,8 +42,11 @@ public class DespesaControllerTest {
 
     @Test
     public void testGetAllDespesas() {
-        Despesa despesa1 = new Despesa(1L, new Usuario(1L), "Descrição 1", BigDecimal.valueOf(100), new CategoriaDespesa(1L), Tipo.FIXA, LocalDate.now());
-        Despesa despesa2 = new Despesa(2L, new Usuario(2L), "Descrição 2", BigDecimal.valueOf(200), new CategoriaDespesa(2L), Tipo.VARIAVEL, LocalDate.now());
+        UUID usuarioId1 = UUID.randomUUID();
+        UUID usuarioId2 = UUID.randomUUID();
+
+        Despesa despesa1 = new Despesa(UUID.randomUUID(), new Usuario(usuarioId1), "Descrição 1", BigDecimal.valueOf(100), new CategoriaDespesa(UUID.randomUUID()), Tipo.FIXA, LocalDate.now());
+        Despesa despesa2 = new Despesa(UUID.randomUUID(), new Usuario(usuarioId2), "Descrição 2", BigDecimal.valueOf(200), new CategoriaDespesa(UUID.randomUUID()), Tipo.VARIAVEL, LocalDate.now());
 
         when(service.getAllDespesas()).thenReturn(Arrays.asList(despesa1, despesa2));
 
@@ -54,28 +57,30 @@ public class DespesaControllerTest {
 
     @Test
     public void testGetDespesaByIdFound() {
-        Despesa despesa = new Despesa(1L, new Usuario(1L), "Descrição 1", BigDecimal.valueOf(100), new CategoriaDespesa(1L), Tipo.FIXA, LocalDate.now());
+        UUID usuarioId = UUID.randomUUID();
+        Despesa despesa = new Despesa(UUID.randomUUID(), new Usuario(usuarioId), "Descrição 1", BigDecimal.valueOf(100), new CategoriaDespesa(UUID.randomUUID()), Tipo.FIXA, LocalDate.now());
 
-        when(service.getDespesaById(anyLong())).thenReturn(Optional.of(despesa));
+        when(service.getDespesaById(any(UUID.class))).thenReturn(Optional.of(despesa));
 
-        ResponseEntity<DespesaDTO> response = controller.getDespesaById(1L);
+        ResponseEntity<DespesaDTO> response = controller.getDespesaById(UUID.randomUUID());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Descrição 1", response.getBody().getDescricao());
     }
 
     @Test
     public void testGetDespesaByIdNotFound() {
-        when(service.getDespesaById(anyLong())).thenReturn(Optional.empty());
+        when(service.getDespesaById(any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<DespesaDTO> response = controller.getDespesaById(1L);
+        ResponseEntity<DespesaDTO> response = controller.getDespesaById(UUID.randomUUID());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testCreateDespesa() {
-        DespesaDTO despesaDTO = new DespesaDTO(null, 1L, "Descrição", BigDecimal.valueOf(100), 1L, Tipo.FIXA, LocalDate.now());
-        Despesa despesa = new Despesa(null, new Usuario(1L), "Descrição", BigDecimal.valueOf(100), new CategoriaDespesa(1L), Tipo.FIXA, LocalDate.now());
-        Despesa savedDespesa = new Despesa(1L, new Usuario(1L), "Descrição", BigDecimal.valueOf(100), new CategoriaDespesa(1L), Tipo.FIXA, LocalDate.now());
+        UUID usuarioId = UUID.randomUUID();
+        DespesaDTO despesaDTO = new DespesaDTO(null, usuarioId, "Descrição", BigDecimal.valueOf(100), UUID.randomUUID(), Tipo.FIXA, LocalDate.now());
+        Despesa despesa = new Despesa(null, new Usuario(usuarioId), "Descrição", BigDecimal.valueOf(100), new CategoriaDespesa(UUID.randomUUID()), Tipo.FIXA, LocalDate.now());
+        Despesa savedDespesa = new Despesa(UUID.randomUUID(), new Usuario(usuarioId), "Descrição", BigDecimal.valueOf(100), new CategoriaDespesa(UUID.randomUUID()), Tipo.FIXA, LocalDate.now());
 
         when(service.saveDespesa(any(Despesa.class))).thenReturn(savedDespesa);
 
@@ -86,52 +91,54 @@ public class DespesaControllerTest {
 
     @Test
     public void testUpdateDespesa() {
-        DespesaDTO despesaDTO = new DespesaDTO(1L, 1L, "Descrição Atualizada", BigDecimal.valueOf(150), 1L, Tipo.VARIAVEL, LocalDate.now());
-        Despesa despesa = new Despesa(1L, new Usuario(1L), "Descrição Atualizada", BigDecimal.valueOf(150), new CategoriaDespesa(1L), Tipo.VARIAVEL, LocalDate.now());
-        Despesa updatedDespesa = new Despesa(1L, new Usuario(1L), "Descrição Atualizada", BigDecimal.valueOf(150), new CategoriaDespesa(1L), Tipo.VARIAVEL, LocalDate.now());
+        UUID usuarioId = UUID.randomUUID();
+        DespesaDTO despesaDTO = new DespesaDTO(UUID.randomUUID(), usuarioId, "Descrição Atualizada", BigDecimal.valueOf(150), UUID.randomUUID(), Tipo.VARIAVEL, LocalDate.now());
+        Despesa despesa = new Despesa(UUID.randomUUID(), new Usuario(usuarioId), "Descrição Atualizada", BigDecimal.valueOf(150), new CategoriaDespesa(UUID.randomUUID()), Tipo.VARIAVEL, LocalDate.now());
+        Despesa updatedDespesa = new Despesa(UUID.randomUUID(), new Usuario(usuarioId), "Descrição Atualizada", BigDecimal.valueOf(150), new CategoriaDespesa(UUID.randomUUID()), Tipo.VARIAVEL, LocalDate.now());
 
-        when(service.getDespesaById(anyLong())).thenReturn(Optional.of(despesa));
+        when(service.getDespesaById(any(UUID.class))).thenReturn(Optional.of(despesa));
         when(service.saveDespesa(any(Despesa.class))).thenReturn(updatedDespesa);
 
-        ResponseEntity<DespesaDTO> response = controller.updateDespesa(1L, despesaDTO);
+        ResponseEntity<DespesaDTO> response = controller.updateDespesa(UUID.randomUUID(), despesaDTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Descrição Atualizada", response.getBody().getDescricao());
     }
 
     @Test
     public void testUpdateDespesaNotFound() {
-        DespesaDTO despesaDTO = new DespesaDTO(1L, 1L, "Descrição Atualizada", BigDecimal.valueOf(150), 1L, Tipo.VARIAVEL, LocalDate.now());
+        DespesaDTO despesaDTO = new DespesaDTO(UUID.randomUUID(), UUID.randomUUID(), "Descrição Atualizada", BigDecimal.valueOf(150), UUID.randomUUID(), Tipo.VARIAVEL, LocalDate.now());
 
-        when(service.getDespesaById(anyLong())).thenReturn(Optional.empty());
+        when(service.getDespesaById(any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<DespesaDTO> response = controller.updateDespesa(1L, despesaDTO);
+        ResponseEntity<DespesaDTO> response = controller.updateDespesa(UUID.randomUUID(), despesaDTO);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testDeleteDespesa() {
-        when(service.getDespesaById(anyLong())).thenReturn(Optional.of(new Despesa()));
+        when(service.getDespesaById(any(UUID.class))).thenReturn(Optional.of(new Despesa()));
 
-        ResponseEntity<Void> response = controller.deleteDespesa(1L);
+        ResponseEntity<Void> response = controller.deleteDespesa(UUID.randomUUID());
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
     public void testDeleteDespesaNotFound() {
-        when(service.getDespesaById(anyLong())).thenReturn(Optional.empty());
+        when(service.getDespesaById(any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<Void> response = controller.deleteDespesa(1L);
+        ResponseEntity<Void> response = controller.deleteDespesa(UUID.randomUUID());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testGetDespesasByUsuarioId() {
-        Despesa despesa1 = new Despesa(1L, new Usuario(1L), "Descrição 1", BigDecimal.valueOf(100), new CategoriaDespesa(1L), Tipo.FIXA, LocalDate.now());
-        Despesa despesa2 = new Despesa(2L, new Usuario(1L), "Descrição 2", BigDecimal.valueOf(200), new CategoriaDespesa(2L), Tipo.VARIAVEL, LocalDate.now());
+        UUID usuarioId = UUID.randomUUID();
+        Despesa despesa1 = new Despesa(UUID.randomUUID(), new Usuario(usuarioId), "Descrição 1", BigDecimal.valueOf(100), new CategoriaDespesa(UUID.randomUUID()), Tipo.FIXA, LocalDate.now());
+        Despesa despesa2 = new Despesa(UUID.randomUUID(), new Usuario(usuarioId), "Descrição 2", BigDecimal.valueOf(200), new CategoriaDespesa(UUID.randomUUID()), Tipo.VARIAVEL, LocalDate.now());
 
-        when(service.getDespesasByUsuarioId(anyLong())).thenReturn(Arrays.asList(despesa1, despesa2));
+        when(service.getDespesasByUsuarioId(any(UUID.class))).thenReturn(Arrays.asList(despesa1, despesa2));
 
-        ResponseEntity<List<DespesaDTO>> response = controller.getDespesasByUsuarioId(1L);
+        ResponseEntity<List<DespesaDTO>> response = controller.getDespesasByUsuarioId(usuarioId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
     }

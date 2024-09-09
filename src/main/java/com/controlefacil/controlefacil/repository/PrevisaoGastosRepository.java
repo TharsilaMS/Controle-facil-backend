@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface PrevisaoGastosRepository extends JpaRepository<PrevisaoGastos, Long> {
+public interface PrevisaoGastosRepository extends JpaRepository<PrevisaoGastos, UUID> {
 
-    Optional<PrevisaoGastos> findByUsuario_IdUsuarioAndDataRevisao(Long usuarioId, LocalDate dataRevisao);
+    Optional<PrevisaoGastos> findByUsuario_IdUsuarioAndDataRevisao(UUID usuarioId, LocalDate dataRevisao);
 
-    List<PrevisaoGastos>  findByUsuario_IdUsuario(Long idUsuario);
+    List<PrevisaoGastos>  findByUsuario_IdUsuario(UUID idUsuario);
 }

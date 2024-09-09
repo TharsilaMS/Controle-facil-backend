@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RendaService {
@@ -24,7 +25,7 @@ public class RendaService {
         return rendaRepository.findAll();
     }
 
-    public Optional<Renda> getRendaById(Long id) {
+    public Optional<Renda> getRendaById(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da renda não pode ser nulo.");
         }
@@ -41,7 +42,7 @@ public class RendaService {
         return rendaRepository.save(renda);
     }
 
-    public Renda updateRenda(Long id, Renda rendaDetails) {
+    public Renda updateRenda(UUID id, Renda rendaDetails) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da renda deve ser fornecido.");
         }
@@ -60,7 +61,7 @@ public class RendaService {
         return rendaRepository.save(renda);
     }
 
-    public void deleteRenda(Long id) {
+    public void deleteRenda(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da renda deve ser fornecido.");
         }

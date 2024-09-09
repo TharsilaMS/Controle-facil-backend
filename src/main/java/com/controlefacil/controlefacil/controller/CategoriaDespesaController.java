@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,7 +29,7 @@ public class CategoriaDespesaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaDespesaDTO> getCategoriaById(@PathVariable Long id) {
+    public ResponseEntity<CategoriaDespesaDTO> getCategoriaById(@PathVariable UUID id) {
         Optional<CategoriaDespesa> categoria = service.findById(id);
         return categoria.map(c -> new CategoriaDespesaDTO(c.getId(), c.getNome()))
                 .map(ResponseEntity::ok)
@@ -37,14 +38,18 @@ public class CategoriaDespesaController {
 
     @PostMapping
     public ResponseEntity<CategoriaDespesaDTO> createCategoria(@RequestBody CategoriaDespesaDTO categoriaDTO) {
-        CategoriaDespesa categoria = new CategoriaDespesa(null, categoriaDTO.getNome());
-        CategoriaDespesa createdCategoria = service.save(categoria);
-        CategoriaDespesaDTO dto = new CategoriaDespesaDTO(createdCategoria.getId(), createdCategoria.getNome());
-        return ResponseEntity.status(201).body(dto);
+        try {
+            CategoriaDespesa categoria = new CategoriaDespesa(null, categoriaDTO.getNome());
+            CategoriaDespesa createdCategoria = service.save(categoria);
+            CategoriaDespesaDTO dto = new CategoriaDespesaDTO(createdCategoria.getId(), createdCategoria.getNome());
+            return ResponseEntity.status(201).body(dto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new CategoriaDespesaDTO(null, e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaDespesaDTO> updateCategoria(@PathVariable Long id, @RequestBody CategoriaDespesaDTO categoriaDTO) {
+    public ResponseEntity<CategoriaDespesaDTO> updateCategoria(@PathVariable UUID id, @RequestBody CategoriaDespesaDTO categoriaDTO) {
         if (service.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }

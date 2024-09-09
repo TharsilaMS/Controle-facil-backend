@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,16 +33,21 @@ public class DespesaServiceTest {
 
     private Despesa despesa;
     private Usuario usuario;
+    private UUID usuarioId;
+    private UUID despesaId;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
+        usuarioId = UUID.randomUUID();
+        despesaId = UUID.randomUUID();
+
         usuario = new Usuario();
-        usuario.setIdUsuario(1L);
+        usuario.setIdUsuario(usuarioId);
 
         despesa = new Despesa();
-        despesa.setId(1L);
+        despesa.setId(despesaId);
         despesa.setDescricao("Despesa Teste");
         despesa.setValor(BigDecimal.valueOf(100));
         despesa.setData(LocalDate.now());
@@ -56,13 +62,13 @@ public class DespesaServiceTest {
 
     @Test
     public void testGetDespesaById() {
-        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
-        assertEquals(despesa, despesaService.getDespesaById(1L).get());
+        when(despesaRepository.findById(despesaId)).thenReturn(Optional.of(despesa));
+        assertEquals(despesa, despesaService.getDespesaById(despesaId).get());
     }
 
     @Test
     public void testSaveDespesa() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(despesaRepository.save(despesa)).thenReturn(despesa);
 
         Despesa savedDespesa = despesaService.saveDespesa(despesa);
@@ -72,54 +78,54 @@ public class DespesaServiceTest {
 
     @Test
     public void testSaveDespesa_UserNotFound() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.saveDespesa(despesa));
     }
 
     @Test
     public void testUpdateDespesa() {
-        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(despesaRepository.findById(despesaId)).thenReturn(Optional.of(despesa));
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(despesaRepository.save(despesa)).thenReturn(despesa);
 
         Despesa updatedDespesa = new Despesa();
-        updatedDespesa.setId(1L);
+        updatedDespesa.setId(despesaId);
         updatedDespesa.setDescricao("Despesa Atualizada");
         updatedDespesa.setValor(BigDecimal.valueOf(150));
         updatedDespesa.setData(LocalDate.now());
         updatedDespesa.setUsuario(usuario);
 
-        Despesa result = despesaService.updateDespesa(1L, updatedDespesa);
+        Despesa result = despesaService.updateDespesa(despesaId, updatedDespesa);
         assertEquals("Despesa Atualizada", result.getDescricao());
     }
 
     @Test
     public void testUpdateDespesa_NotFound() {
-        when(despesaRepository.findById(1L)).thenReturn(Optional.empty());
+        when(despesaRepository.findById(despesaId)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.updateDespesa(1L, despesa));
+        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.updateDespesa(despesaId, despesa));
     }
 
     @Test
     public void testDeleteDespesa() {
-        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+        when(despesaRepository.findById(despesaId)).thenReturn(Optional.of(despesa));
         doNothing().when(despesaRepository).delete(despesa);
 
-        despesaService.deleteDespesa(1L);
+        despesaService.deleteDespesa(despesaId);
         verify(despesaRepository, times(1)).delete(despesa);
     }
 
     @Test
     public void testDeleteDespesa_NotFound() {
-        when(despesaRepository.findById(1L)).thenReturn(Optional.empty());
+        when(despesaRepository.findById(despesaId)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.deleteDespesa(1L));
+        assertThrows(RecursoNaoEncontradoException.class, () -> despesaService.deleteDespesa(despesaId));
     }
 
     @Test
     public void testGetDespesasByUsuarioId() {
-        when(despesaRepository.findByUsuario_IdUsuario(1L)).thenReturn(List.of(despesa));
-        assertEquals(1, despesaService.getDespesasByUsuarioId(1L).size());
+        when(despesaRepository.findByUsuario_IdUsuario(usuarioId)).thenReturn(List.of(despesa));
+        assertEquals(1, despesaService.getDespesasByUsuarioId(usuarioId).size());
     }
 }

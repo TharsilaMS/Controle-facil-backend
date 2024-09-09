@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,7 +28,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable UUID id) {
         Optional<Usuario> usuario = usuarioService.getUsuarioById(id);
         return usuario.map(this::convertToDTO)
                 .map(ResponseEntity::ok)
@@ -50,7 +51,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable UUID id, @RequestBody UsuarioDTO usuarioDTO) {  // Alterado para UUID
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(id);
         usuario.setNome(usuarioDTO.getNome());
@@ -66,7 +67,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUsuario(@PathVariable UUID id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
     }

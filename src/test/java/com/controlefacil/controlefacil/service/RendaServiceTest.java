@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,14 +34,18 @@ class RendaServiceTest {
 
     private Renda renda;
     private Usuario usuario;
+    private UUID rendaId;
+    private UUID usuarioId;
 
     @BeforeEach
     void setUp() {
+        usuarioId = UUID.randomUUID();
         usuario = new Usuario();
-        usuario.setIdUsuario(1L);
+        usuario.setIdUsuario(usuarioId);
 
+        rendaId = UUID.randomUUID();
         renda = new Renda();
-        renda.setId(1L);
+        renda.setId(rendaId);
         renda.setDescricao("Salário");
         renda.setValor(new BigDecimal("5000.00"));
         renda.setData(LocalDate.now());
@@ -55,13 +60,13 @@ class RendaServiceTest {
 
     @Test
     void testGetRendaById() {
-        when(rendaRepository.findById(1L)).thenReturn(Optional.of(renda));
+        when(rendaRepository.findById(rendaId)).thenReturn(Optional.of(renda));
 
-        Optional<Renda> foundRenda = rendaService.getRendaById(1L);
+        Optional<Renda> foundRenda = rendaService.getRendaById(rendaId);
         assertTrue(foundRenda.isPresent());
         assertEquals(renda.getDescricao(), foundRenda.get().getDescricao());
 
-        verify(rendaRepository, times(1)).findById(1L);
+        verify(rendaRepository, times(1)).findById(rendaId);
     }
 
     @Test
@@ -74,7 +79,7 @@ class RendaServiceTest {
 
     @Test
     void testSaveRenda() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(rendaRepository.save(renda)).thenReturn(renda);
 
         Renda savedRenda = rendaService.saveRenda(renda);
@@ -86,13 +91,13 @@ class RendaServiceTest {
 
     @Test
     void testSaveRendaWithNonExistentUsuarioThrowsException() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
         RecursoNaoEncontradoException exception = assertThrows(RecursoNaoEncontradoException.class, () -> {
             rendaService.saveRenda(renda);
         });
 
-        assertEquals("Usuário não encontrado com o id 1", exception.getMessage());
+        assertEquals("Usuário não encontrado com o id " + usuarioId, exception.getMessage());
     }
 
     @Test
@@ -102,10 +107,10 @@ class RendaServiceTest {
         rendaDetails.setValor(new BigDecimal("6000.00"));
         rendaDetails.setData(LocalDate.now());
 
-        when(rendaRepository.findById(1L)).thenReturn(Optional.of(renda));
+        when(rendaRepository.findById(rendaId)).thenReturn(Optional.of(renda));
         when(rendaRepository.save(renda)).thenReturn(renda);
 
-        Renda updatedRenda = rendaService.updateRenda(1L, rendaDetails);
+        Renda updatedRenda = rendaService.updateRenda(rendaId, rendaDetails);
 
         assertEquals("Novo Salário", updatedRenda.getDescricao());
         assertEquals(new BigDecimal("6000.00"), updatedRenda.getValor());
@@ -114,21 +119,21 @@ class RendaServiceTest {
 
     @Test
     void testDeleteRenda() {
-        when(rendaRepository.findById(1L)).thenReturn(Optional.of(renda));
+        when(rendaRepository.findById(rendaId)).thenReturn(Optional.of(renda));
 
-        rendaService.deleteRenda(1L);
+        rendaService.deleteRenda(rendaId);
 
         verify(rendaRepository, times(1)).delete(renda);
     }
 
     @Test
     void testDeleteRendaWithNonExistentIdThrowsException() {
-        when(rendaRepository.findById(1L)).thenReturn(Optional.empty());
+        when(rendaRepository.findById(rendaId)).thenReturn(Optional.empty());
 
         RecursoNaoEncontradoException exception = assertThrows(RecursoNaoEncontradoException.class, () -> {
-            rendaService.deleteRenda(1L);
+            rendaService.deleteRenda(rendaId);
         });
 
-        assertEquals("Renda não encontrada com o id 1", exception.getMessage());
+        assertEquals("Renda não encontrada com o id " + rendaId, exception.getMessage());
     }
 }

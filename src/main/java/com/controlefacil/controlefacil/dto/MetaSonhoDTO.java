@@ -8,18 +8,19 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetaSonhoDTO {
-    private Long id;
+    private UUID id;
     private String titulo;
     private String descricao;
     private BigDecimal valorAlvo;
     private BigDecimal valorEconomizado;
     private String prazo;
     private Status status;
-    private Long usuarioId;
+    private UUID usuarioId;
 }
 

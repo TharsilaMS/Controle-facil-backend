@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioDTO {
 
-    private Long idUsuario;
+    private UUID idUsuario;
     private String nome;
     private String email;
     private String senha;

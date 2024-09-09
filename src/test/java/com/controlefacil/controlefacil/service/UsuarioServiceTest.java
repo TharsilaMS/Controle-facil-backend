@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -32,13 +32,16 @@ public class UsuarioServiceTest {
 
     private Usuario usuario;
     private Saldo saldo;
+    private UUID usuarioId;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
+        usuarioId = UUID.randomUUID();
+
         usuario = new Usuario();
-        usuario.setIdUsuario(1L);
+        usuario.setIdUsuario(usuarioId);
         usuario.setNome("Usuario Teste");
 
         saldo = new Saldo();
@@ -56,8 +59,8 @@ public class UsuarioServiceTest {
 
     @Test
     public void testGetUsuarioById() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        assertEquals(usuario, usuarioService.getUsuarioById(1L).get());
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        assertEquals(usuario, usuarioService.getUsuarioById(usuarioId).get());
     }
 
     @Test
@@ -74,26 +77,26 @@ public class UsuarioServiceTest {
 
     @Test
     public void testUpdateUsuario() {
-        when(usuarioRepository.existsById(1L)).thenReturn(true);
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
 
-        Usuario updatedUsuario = usuarioService.updateUsuario(1L, usuario);
+        Usuario updatedUsuario = usuarioService.updateUsuario(usuarioId, usuario);
         assertNotNull(updatedUsuario);
         assertEquals(usuario.getIdUsuario(), updatedUsuario.getIdUsuario());
     }
 
     @Test
     public void testUpdateUsuario_NotFound() {
-        when(usuarioRepository.existsById(1L)).thenReturn(false);
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(false);
 
-        Usuario updatedUsuario = usuarioService.updateUsuario(1L, usuario);
+        Usuario updatedUsuario = usuarioService.updateUsuario(usuarioId, usuario);
         assertNull(updatedUsuario);
     }
 
     @Test
     public void testDeleteUsuario() {
-        doNothing().when(usuarioRepository).deleteById(1L);
-        usuarioService.deleteUsuario(1L);
-        verify(usuarioRepository, times(1)).deleteById(1L);
+        doNothing().when(usuarioRepository).deleteById(usuarioId);
+        usuarioService.deleteUsuario(usuarioId);
+        verify(usuarioRepository, times(1)).deleteById(usuarioId);
     }
 }

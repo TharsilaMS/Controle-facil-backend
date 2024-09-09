@@ -6,14 +6,15 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaldoDTO {
 
-    private Long id;
-    private Long usuarioId;
+    private UUID id;
+    private UUID usuarioId;
     private BigDecimal saldo;
 
 }

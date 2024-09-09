@@ -2,6 +2,7 @@ package com.controlefacil.controlefacil.service;
 
 import com.controlefacil.controlefacil.model.Despesa;
 import com.controlefacil.controlefacil.model.Renda;
+import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.DespesaRepository;
 import com.controlefacil.controlefacil.repository.RendaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -31,29 +33,34 @@ public class SaldoServiceTest {
     private Despesa despesa2;
     private Renda renda1;
     private Renda renda2;
+    private UUID usuarioId;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Inicializa as despesas e rendas com valores de exemplo
+        // Gera um UUID para o usuário
+        usuarioId = UUID.randomUUID();
+
         despesa1 = new Despesa();
         despesa1.setValor(new BigDecimal("50.00"));
+        despesa1.setUsuario(new Usuario(usuarioId));  // Associa o usuário à despesa
 
         despesa2 = new Despesa();
         despesa2.setValor(new BigDecimal("30.00"));
+        despesa2.setUsuario(new Usuario(usuarioId));  // Associa o usuário à despesa
 
         renda1 = new Renda();
         renda1.setValor(new BigDecimal("100.00"));
+        renda1.setUsuario(new Usuario(usuarioId));  // Associa o usuário à renda
 
         renda2 = new Renda();
         renda2.setValor(new BigDecimal("200.00"));
+        renda2.setUsuario(new Usuario(usuarioId));  // Associa o usuário à renda
     }
 
     @Test
     public void testCalcularSaldo() {
-        Long usuarioId = 1L;
-
         when(despesaRepository.findByUsuario_IdUsuario(usuarioId))
                 .thenReturn(List.of(despesa1, despesa2));
         when(rendaRepository.findByUsuario_IdUsuario(usuarioId))
@@ -68,8 +75,6 @@ public class SaldoServiceTest {
 
     @Test
     public void testGetDespesasByUsuario() {
-        Long usuarioId = 1L;
-
         when(despesaRepository.findByUsuario_IdUsuario(usuarioId))
                 .thenReturn(List.of(despesa1, despesa2));
 
@@ -82,8 +87,6 @@ public class SaldoServiceTest {
 
     @Test
     public void testGetRendasByUsuario() {
-        Long usuarioId = 1L;
-
         when(rendaRepository.findByUsuario_IdUsuario(usuarioId))
                 .thenReturn(List.of(renda1, renda2));
 

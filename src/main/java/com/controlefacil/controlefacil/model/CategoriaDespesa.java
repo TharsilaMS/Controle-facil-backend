@@ -3,6 +3,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
 @Entity
 @Table(name = "categoria_despesa")
 @Data
@@ -12,12 +15,13 @@ public class CategoriaDespesa {
 
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private UUID id;
+
 
         @Column(nullable = false)
         private String nome;
-        public CategoriaDespesa(Long id) {
+        public CategoriaDespesa(UUID id) {
                 this.id = id;
         }
     }

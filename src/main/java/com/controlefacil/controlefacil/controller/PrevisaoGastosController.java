@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/previsao-gastos")
@@ -37,7 +38,7 @@ public class PrevisaoGastosController {
     }
 
     @PutMapping("/{usuarioId}")
-    public ResponseEntity<PrevisaoGastosDTO> updatePrevisaoGastos(@PathVariable Long usuarioId, @RequestBody PrevisaoGastosDTO previsaoGastosDTO) {
+    public ResponseEntity<PrevisaoGastosDTO> updatePrevisaoGastos(@PathVariable UUID usuarioId, @RequestBody PrevisaoGastosDTO previsaoGastosDTO) {
         try {
             PrevisaoGastos previsaoGastos = new PrevisaoGastos();
             previsaoGastos.setLimiteGastos(previsaoGastosDTO.getLimiteGastos());
@@ -58,7 +59,7 @@ public class PrevisaoGastosController {
     }
 
     @GetMapping("/{usuarioId}")
-    public ResponseEntity<PrevisaoGastosDTO> getPrevisaoGastos(@PathVariable Long usuarioId) {
+    public ResponseEntity<PrevisaoGastosDTO> getPrevisaoGastos(@PathVariable UUID usuarioId) {
         try {
             previsaoGastosService.updateGastosAtuais(usuarioId);
             previsaoGastosService.verificarLimite(usuarioId);

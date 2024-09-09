@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SaldoService {
@@ -19,7 +20,7 @@ public class SaldoService {
     @Autowired
     private RendaRepository rendaRepository;
 
-    public BigDecimal calcularSaldo(Long usuarioId) {
+    public BigDecimal calcularSaldo(UUID usuarioId) {
         List<Despesa> despesas = despesaRepository.findByUsuario_IdUsuario(usuarioId);
 
         List<Renda> rendas = rendaRepository.findByUsuario_IdUsuario(usuarioId);
@@ -32,11 +33,11 @@ public class SaldoService {
         return totalRendas.subtract(totalDespesas);
     }
 
-    public List<Despesa> getDespesasByUsuario(Long usuarioId) {
+    public List<Despesa> getDespesasByUsuario(UUID usuarioId) {
         return despesaRepository.findByUsuario_IdUsuario(usuarioId);
     }
 
-    public List<Renda> getRendasByUsuario(Long usuarioId) {
+    public List<Renda> getRendasByUsuario(UUID usuarioId) {
         return rendaRepository.findByUsuario_IdUsuario(usuarioId);
     }
 }

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
@@ -25,7 +26,7 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Optional<Usuario> getUsuarioById(Long id) {
+    public Optional<Usuario> getUsuarioById(UUID id) {
         return usuarioRepository.findById(id);
     }
 
@@ -41,7 +42,7 @@ public class UsuarioService {
         return novoUsuario;
     }
 
-    public Usuario updateUsuario(Long id, Usuario user) {
+    public Usuario updateUsuario(UUID id, Usuario user) {
         if (usuarioRepository.existsById(id)) {
             user.setIdUsuario(id);
             return usuarioRepository.save(user);
@@ -49,7 +50,7 @@ public class UsuarioService {
         return null;
     }
 
-    public void deleteUsuario(Long id) {
+    public void deleteUsuario(UUID id) {
         usuarioRepository.deleteById(id);
     }
 }

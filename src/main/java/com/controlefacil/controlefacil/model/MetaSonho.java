@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -16,8 +17,8 @@ import java.time.LocalDateTime;
 public class MetaSonho {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(nullable = false, length = 255)
     private String titulo;
@@ -25,39 +26,30 @@ public class MetaSonho {
     @Column(length = 500)
     private String descricao;
 
-
     @Column(name = "valor_alvo", nullable = false, precision = 38, scale = 2)
     private BigDecimal valorAlvo;
 
     @Column(name = "valor_total", nullable = false, precision = 38, scale = 2)
     private BigDecimal valorTotal;
 
-
     @Column(name = "valor_economizado", nullable = false, precision = 38, scale = 2)
     private BigDecimal valorEconomizado = BigDecimal.ZERO;
-
 
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
-
     @Column(nullable = false)
     private LocalDateTime prazo;
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.ATIVA;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false) // Ensure it's not nullable if required
     private Usuario usuario;
 
-
-    public MetaSonho(Long id) {
+    public MetaSonho(UUID id) {
         this.id = id;
     }
-
-
 }

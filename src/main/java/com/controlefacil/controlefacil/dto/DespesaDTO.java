@@ -7,17 +7,18 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DespesaDTO {
 
-    private Long id;
-    private Long usuarioId;
+    private UUID id;
+    private UUID usuarioId;
     private String descricao;
     private BigDecimal valor;
-    private Long categoriaDespesaId;
+    private String categoriaDespesaNome;;
     private Tipo tipo;
     private LocalDate data;
 }

@@ -6,6 +6,7 @@ import com.controlefacil.controlefacil.model.Status;
 import com.controlefacil.controlefacil.repository.MetaSonhosRepository;
 import com.controlefacil.controlefacil.repository.PrevisaoGastosRepository;
 import com.controlefacil.controlefacil.util.ConversorDeData;
+import com.controlefacil.controlefacil.exception.MetaAtivaExistenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class MetaSonhoService {
@@ -26,11 +28,29 @@ public class MetaSonhoService {
     private PrevisaoGastosRepository previsaoGastosRepository;
 
     public MetaSonho createMetaSonho(MetaSonho metaSonho) {
+        // Verifique se o usuário já tem uma meta ativa
+        List<MetaSonho> metasAtivas = metaSonhoRepository.findByUsuario_IdUsuarioAndStatus(
+                metaSonho.getUsuario().getIdUsuario(),
+                Status.ATIVA
+        );
+
+        if (!metasAtivas.isEmpty()) {
+            throw new MetaAtivaExistenteException("O usuário já possui uma meta ativa. Conclua a meta atual antes de criar uma nova.");
+        }
+
         return metaSonhoRepository.save(metaSonho);
     }
 
-    public MetaSonho updateMetaSonho(Long id, MetaSonho metaSonho) {
+    public MetaSonho updateMetaSonho(UUID id, MetaSonho metaSonho) {
         if (metaSonhoRepository.existsById(id)) {
+            MetaSonho metaExistente = metaSonhoRepository.findById(id).orElseThrow(() ->
+                    new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
+
+            // Atualize apenas se a meta está concluída ou se for a mesma meta
+            if (metaExistente.getStatus() != Status.CONCLUIDA && !metaExistente.getId().equals(metaSonho.getId())) {
+                throw new RuntimeException("Não é permitido atualizar a meta ativa. Conclua a meta atual antes de atualizar.");
+            }
+
             metaSonho.setId(id);
             return metaSonhoRepository.save(metaSonho);
         } else {
@@ -38,23 +58,31 @@ public class MetaSonhoService {
         }
     }
 
-    public MetaSonho getMetaSonhoById(Long id) {
+    public MetaSonho getMetaSonhoById(UUID id) {
         return metaSonhoRepository.findById(id).orElseThrow(() -> new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
     }
 
-    public List<MetaSonho> getAllMetaSonhosByUsuarioId(Long usuarioId) {
+    public List<MetaSonho> getAllMetaSonhosByUsuarioId(UUID usuarioId) {
         return metaSonhoRepository.findByUsuario_IdUsuario(usuarioId);
     }
 
-    public void deleteMetaSonho(Long id) {
+    public void deleteMetaSonho(UUID id) {
         if (metaSonhoRepository.existsById(id)) {
+            MetaSonho metaSonho = metaSonhoRepository.findById(id).orElseThrow(() ->
+                    new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
+
+            // Não permita a exclusão de uma meta ativa
+            if (metaSonho.getStatus() == Status.ATIVA) {
+                throw new RuntimeException("Não é permitido excluir uma meta ativa. Conclua a meta antes de excluí-la.");
+            }
+
             metaSonhoRepository.deleteById(id);
         } else {
             throw new RuntimeException("Meta de Sonho não encontrada com ID: " + id);
         }
     }
 
-    public String verificarEconomiaEGuardar(Long usuarioId) {
+    public String verificarEconomiaEGuardar(UUID usuarioId) {
         Optional<PrevisaoGastos> previsaoGastosOpt = previsaoGastosRepository.findById(usuarioId);
         if (previsaoGastosOpt.isPresent()) {
             PrevisaoGastos previsaoGastos = previsaoGastosOpt.get();
@@ -63,7 +91,10 @@ public class MetaSonhoService {
             BigDecimal economia = limiteGastos.subtract(gastosAtuais);
 
             if (economia.compareTo(BigDecimal.ZERO) > 0) {
-                List<MetaSonho> metas = metaSonhoRepository.findByUsuario_IdUsuario(usuarioId);
+                List<MetaSonho> metas = metaSonhoRepository.findByUsuario_IdUsuarioAndStatus(
+                        usuarioId, Status.ATIVA
+                );
+
                 if (!metas.isEmpty()) {
                     MetaSonho metaSonho = metas.get(0);
                     metaSonho.setValorEconomizado(metaSonho.getValorEconomizado().add(economia));
@@ -82,6 +113,7 @@ public class MetaSonhoService {
             return "Previsão de gastos não encontrada para o usuário.";
         }
     }
+
     public void verificarMetaAlcancada(MetaSonho metaSonho) {
         BigDecimal valorEconomizado = metaSonho.getValorEconomizado();
         BigDecimal valorAlvo = metaSonho.getValorAlvo();
@@ -91,7 +123,6 @@ public class MetaSonhoService {
             metaSonhoRepository.save(metaSonho);
         }
     }
-
 
     public LocalDate convertToLocalDate(String dateString) {
         return ConversorDeData.parseDate(dateString);

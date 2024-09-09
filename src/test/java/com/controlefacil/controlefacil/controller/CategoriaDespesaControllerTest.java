@@ -1,6 +1,5 @@
 package com.controlefacil.controlefacil.controller;
 
-
 import com.controlefacil.controlefacil.dto.CategoriaDespesaDTO;
 import com.controlefacil.controlefacil.model.CategoriaDespesa;
 import com.controlefacil.controlefacil.service.CategoriaDespesaService;
@@ -16,10 +15,11 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+
 import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig
@@ -38,8 +38,10 @@ public class CategoriaDespesaControllerTest {
 
     @Test
     public void testGetAllCategorias() {
-        CategoriaDespesa categoria1 = new CategoriaDespesa(1L, "Alimentação");
-        CategoriaDespesa categoria2 = new CategoriaDespesa(2L, "Transporte");
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        CategoriaDespesa categoria1 = new CategoriaDespesa(id1, "Alimentação");
+        CategoriaDespesa categoria2 = new CategoriaDespesa(id2, "Transporte");
 
         when(service.findAll()).thenReturn(Arrays.asList(categoria1, categoria2));
 
@@ -50,20 +52,21 @@ public class CategoriaDespesaControllerTest {
 
     @Test
     public void testGetCategoriaByIdFound() {
-        CategoriaDespesa categoria = new CategoriaDespesa(1L, "Alimentação");
+        UUID id = UUID.randomUUID();
+        CategoriaDespesa categoria = new CategoriaDespesa(id, "Alimentação");
 
-        when(service.findById(anyLong())).thenReturn(Optional.of(categoria));
+        when(service.findById(any(UUID.class))).thenReturn(Optional.of(categoria));
 
-        ResponseEntity<CategoriaDespesaDTO> response = controller.getCategoriaById(1L);
+        ResponseEntity<CategoriaDespesaDTO> response = controller.getCategoriaById(id);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Alimentação", response.getBody().getNome());
     }
 
     @Test
     public void testGetCategoriaByIdNotFound() {
-        when(service.findById(anyLong())).thenReturn(Optional.empty());
+        when(service.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<CategoriaDespesaDTO> response = controller.getCategoriaById(1L);
+        ResponseEntity<CategoriaDespesaDTO> response = controller.getCategoriaById(UUID.randomUUID());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
@@ -71,7 +74,8 @@ public class CategoriaDespesaControllerTest {
     public void testCreateCategoria() {
         CategoriaDespesaDTO categoriaDTO = new CategoriaDespesaDTO(null, "Alimentação");
         CategoriaDespesa categoria = new CategoriaDespesa(null, "Alimentação");
-        CategoriaDespesa createdCategoria = new CategoriaDespesa(1L, "Alimentação");
+        UUID id = UUID.randomUUID();
+        CategoriaDespesa createdCategoria = new CategoriaDespesa(id, "Alimentação");
 
         when(service.save(any(CategoriaDespesa.class))).thenReturn(createdCategoria);
 
@@ -82,14 +86,15 @@ public class CategoriaDespesaControllerTest {
 
     @Test
     public void testUpdateCategoria() {
+        UUID id = UUID.randomUUID();
         CategoriaDespesaDTO categoriaDTO = new CategoriaDespesaDTO(null, "Alimentação Atualizada");
-        CategoriaDespesa categoria = new CategoriaDespesa(1L, "Alimentação Atualizada");
-        CategoriaDespesa updatedCategoria = new CategoriaDespesa(1L, "Alimentação Atualizada");
+        CategoriaDespesa categoria = new CategoriaDespesa(id, "Alimentação Atualizada");
+        CategoriaDespesa updatedCategoria = new CategoriaDespesa(id, "Alimentação Atualizada");
 
-        when(service.findById(anyLong())).thenReturn(Optional.of(categoria));
+        when(service.findById(any(UUID.class))).thenReturn(Optional.of(categoria));
         when(service.save(any(CategoriaDespesa.class))).thenReturn(updatedCategoria);
 
-        ResponseEntity<CategoriaDespesaDTO> response = controller.updateCategoria(1L, categoriaDTO);
+        ResponseEntity<CategoriaDespesaDTO> response = controller.updateCategoria(id, categoriaDTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Alimentação Atualizada", response.getBody().getNome());
     }
@@ -98,9 +103,9 @@ public class CategoriaDespesaControllerTest {
     public void testUpdateCategoriaNotFound() {
         CategoriaDespesaDTO categoriaDTO = new CategoriaDespesaDTO(null, "Alimentação Atualizada");
 
-        when(service.findById(anyLong())).thenReturn(Optional.empty());
+        when(service.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<CategoriaDespesaDTO> response = controller.updateCategoria(1L, categoriaDTO);
+        ResponseEntity<CategoriaDespesaDTO> response = controller.updateCategoria(UUID.randomUUID(), categoriaDTO);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

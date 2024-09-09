@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "saldo")
@@ -16,8 +17,9 @@ import java.time.LocalDate;
 public class Saldo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
