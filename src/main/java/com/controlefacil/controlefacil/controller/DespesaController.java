@@ -67,8 +67,13 @@ public class DespesaController {
 
     @PostMapping
     public ResponseEntity<DespesaDTO> createDespesa(@RequestBody DespesaDTO despesaDTO) {
+        if (despesaDTO.getUsuarioId() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         Usuario usuario = usuarioService.getUsuarioById(despesaDTO.getUsuarioId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+
         CategoriaDespesa categoria = categoriaDespesaService.findByNome(despesaDTO.getCategoriaDespesaNome())
                 .orElseGet(() -> {
                     CategoriaDespesa novaCategoria = new CategoriaDespesa();
@@ -97,6 +102,7 @@ public class DespesaController {
         );
         return ResponseEntity.status(201).body(dto);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<DespesaDTO> updateDespesa(@PathVariable UUID id, @RequestBody DespesaDTO despesaDTO) {
