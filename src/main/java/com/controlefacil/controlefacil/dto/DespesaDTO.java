@@ -1,6 +1,7 @@
 package com.controlefacil.controlefacil.dto;
 
 import com.controlefacil.controlefacil.model.Tipo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,9 @@ public class DespesaDTO {
     private UUID usuarioId;
     private String descricao;
     private BigDecimal valor;
-    private String categoriaDespesaNome;;
+    private String categoriaDespesaNome;
     private Tipo tipo;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate data;
 }

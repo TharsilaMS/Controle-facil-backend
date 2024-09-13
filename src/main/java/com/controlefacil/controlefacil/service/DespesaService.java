@@ -35,6 +35,9 @@ public class DespesaService {
     }
 
     public Despesa saveDespesa(Despesa despesa) {
+        if (despesa.getData() == null) {
+            throw new IllegalArgumentException("A data da despesa não pode ser nula.");
+        }
 
         Usuario usuario = usuarioRepository.findById(despesa.getUsuario().getIdUsuario())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
@@ -48,6 +51,7 @@ public class DespesaService {
         despesa.setCategoriaDespesa(categoria);
         return despesaRepository.save(despesa);
     }
+
 
 
     public Despesa updateDespesa(UUID id, Despesa despesaDetails) {
