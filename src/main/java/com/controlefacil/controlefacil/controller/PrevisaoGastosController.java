@@ -23,16 +23,12 @@ public class PrevisaoGastosController {
     @PostMapping
     public ResponseEntity<PrevisaoGastosDTO> createPrevisaoGastos(@RequestBody PrevisaoGastosDTO previsaoGastosDTO) {
         try {
-            // Criação do objeto PrevisaoGastos a partir do DTO
+
             PrevisaoGastos previsaoGastos = new PrevisaoGastos();
             previsaoGastos.setUsuario(new Usuario(previsaoGastosDTO.getUsuarioId()));
             previsaoGastos.setLimiteGastos(previsaoGastosDTO.getLimiteGastos());
             previsaoGastos.setDataRevisao(previsaoGastosDTO.getDataRevisao());
-
-            // Salvando a previsão de gastos
             PrevisaoGastos savedPrevisaoGastos = previsaoGastosService.createPrevisaoGastos(previsaoGastos);
-
-            // Criando o DTO para a resposta
             PrevisaoGastosDTO dto = new PrevisaoGastosDTO(
                     savedPrevisaoGastos.getId(),
                     savedPrevisaoGastos.getUsuario().getIdUsuario(),
@@ -40,11 +36,8 @@ public class PrevisaoGastosController {
                     savedPrevisaoGastos.getGastosAtuais(),
                     savedPrevisaoGastos.getDataRevisao()
             );
-
-            // Retornando a resposta com status 201 Created
             return ResponseEntity.status(201).body(dto);
         } catch (Exception e) {
-            // Retornando status 500 Internal Server Error em caso de exceção
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }

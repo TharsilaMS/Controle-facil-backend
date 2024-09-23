@@ -34,6 +34,8 @@ public class MetaSonhoController {
         return ResponseEntity.ok(metaSonhoDTOs);
     }
 
+
+
     @GetMapping("/{id}")
     public ResponseEntity<MetaSonhoDTO> getMetaSonhoById(@PathVariable UUID id) {
         try {
@@ -97,7 +99,14 @@ public class MetaSonhoController {
     public String verificarEconomiaEGuardar(@PathVariable UUID usuarioId) {
         return metaSonhoService.verificarEconomiaEGuardar(usuarioId);
     }
-
+    @PatchMapping("/{id}/adicionar-valor")
+    public ResponseEntity<MetaSonhoDTO> adicionarValorMeta(
+            @PathVariable UUID id,
+            @RequestParam BigDecimal valorAdicional) {
+        MetaSonho metaAtualizada = metaSonhoService.adicionarValorMeta(id, valorAdicional);
+        MetaSonhoDTO metaSonhoDTO = convertToDTO(metaAtualizada);
+        return ResponseEntity.ok(metaSonhoDTO);
+    }
     private MetaSonhoDTO convertToDTO(MetaSonho metaSonho) {
         MetaSonhoDTO metaSonhoDTO = new MetaSonhoDTO();
         metaSonhoDTO.setId(metaSonho.getId());

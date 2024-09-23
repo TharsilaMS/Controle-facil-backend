@@ -121,6 +121,13 @@ public class MetaSonhoService {
             metaSonhoRepository.save(metaSonho);
         }
     }
+    public MetaSonho adicionarValorMeta(UUID idMeta, BigDecimal valorAdicional) {
+        MetaSonho metaSonho = metaSonhoRepository.findById(idMeta)
+                .orElseThrow(() -> new RuntimeException("Meta de Sonho não encontrada com ID: " + idMeta));
+        metaSonho.setValorEconomizado(metaSonho.getValorEconomizado().add(valorAdicional));
+        verificarMetaAlcancada(metaSonho);
+        return metaSonhoRepository.save(metaSonho);
+    }
 
     public LocalDate convertToLocalDate(String dateString) {
         return ConversorDeData.parseDate(dateString);
