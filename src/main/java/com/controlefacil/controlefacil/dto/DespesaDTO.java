@@ -10,6 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+
+/**
+ * Data Transfer Object (DTO) para Despesa.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

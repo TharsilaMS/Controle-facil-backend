@@ -12,6 +12,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Classe responsável por agendar tarefas relacionadas à previsão de gastos.
+ * Esta classe utiliza agendamento automático para redefinir as previsões de gastos dos usuários no início de cada mês.
+ */
 @Component
 public class Agendamento {
 
@@ -21,6 +25,11 @@ public class Agendamento {
     @Autowired
     private UsuarioService usuarioService;
 
+    /**
+     * Método agendado que é executado no primeiro dia de cada mês à meia-noite.
+     * Este método redefine a previsão de gastos para todos os usuários,
+     * estabelecendo o limite e os gastos atuais como zero.
+     */
     @Scheduled(cron = "0 0 0 1 * ?")
     public void resetPrevisaoGastos() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();

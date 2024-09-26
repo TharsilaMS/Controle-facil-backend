@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+/**
+ * Repositório para gerenciar as metas.
+ */
 @Repository
 public interface MetaSonhosRepository extends JpaRepository<MetaSonho, UUID> {
     List<MetaSonho> findByUsuario_IdUsuario(UUID idUsuario);

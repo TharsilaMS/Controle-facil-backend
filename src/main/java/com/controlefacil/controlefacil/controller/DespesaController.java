@@ -17,6 +17,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Controlador REST para gerenciar despesas dos usuários.
+ * Proporciona endpoints para CRUD (Criar, Ler, Atualizar e Deletar) despesas.
+ */
 @RestController
 @RequestMapping("/api/despesas")
 public class DespesaController {
@@ -30,17 +34,21 @@ public class DespesaController {
     @Autowired
     private CategoriaDespesaService categoriaDespesaService;
 
+    /**
+     * Retorna uma lista de todas as despesas cadastradas.
+     *
+     * @return ResponseEntity contendo uma lista de DespesaDTO com as despesas.
+     */
     @GetMapping
     public ResponseEntity<List<DespesaDTO>> getAllDespesas() {
         List<Despesa> despesas = despesaService.getAllDespesas();
-
         List<DespesaDTO> despesaDTOs = despesas.stream()
                 .map(d -> new DespesaDTO(
                         d.getId(),
                         d.getUsuario().getIdUsuario(),
                         d.getDescricao(),
                         d.getValor(),
-                        d.getCategoriaDespesa() != null ? d.getCategoriaDespesa().getNome() : null, // Nome da categoria
+                        d.getCategoriaDespesa() != null ? d.getCategoriaDespesa().getNome() : null,
                         d.getTipo(),
                         d.getData()
                 ))
@@ -48,16 +56,21 @@ public class DespesaController {
         return ResponseEntity.ok(despesaDTOs);
     }
 
+    /**
+     * Retorna uma despesa específica com base no ID fornecido.
+     *
+     * @param id O UUID da despesa a ser buscada.
+     * @return ResponseEntity contendo o DespesaDTO correspondente ou 404 se não for encontrada.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<DespesaDTO> getDespesaById(@PathVariable UUID id) {
         Optional<Despesa> despesa = despesaService.getDespesaById(id);
-
         return despesa.map(d -> new DespesaDTO(
                         d.getId(),
                         d.getUsuario().getIdUsuario(),
                         d.getDescricao(),
                         d.getValor(),
-                        d.getCategoriaDespesa() != null ? d.getCategoriaDespesa().getNome() : null, // Nome da categoria
+                        d.getCategoriaDespesa() != null ? d.getCategoriaDespesa().getNome() : null,
                         d.getTipo(),
                         d.getData()
                 ))
@@ -65,6 +78,12 @@ public class DespesaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Cria uma nova despesa com os dados fornecidos.
+     *
+     * @param despesaDTO O DTO contendo os dados da nova despesa.
+     * @return ResponseEntity com a despesa criada ou uma mensagem de erro se a criação falhar.
+     */
     @PostMapping
     public ResponseEntity<DespesaDTO> createDespesa(@RequestBody DespesaDTO despesaDTO) {
         if (despesaDTO.getUsuarioId() == null) {
@@ -103,7 +122,13 @@ public class DespesaController {
         return ResponseEntity.status(201).body(dto);
     }
 
-
+    /**
+     * Atualiza uma despesa existente com os dados fornecidos.
+     *
+     * @param id O UUID da despesa a ser atualizada.
+     * @param despesaDTO O DTO contendo os dados atualizados da despesa.
+     * @return ResponseEntity com a despesa atualizada ou 404 se a despesa não for encontrada.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<DespesaDTO> updateDespesa(@PathVariable UUID id, @RequestBody DespesaDTO despesaDTO) {
         Optional<Despesa> existingDespesa = despesaService.getDespesaById(id);
@@ -138,6 +163,12 @@ public class DespesaController {
         return ResponseEntity.ok(dto);
     }
 
+    /**
+     * Deleta uma despesa existente com base no ID fornecido.
+     *
+     * @param id O UUID da despesa a ser deletada.
+     * @return ResponseEntity com status 204 se a despesa foi deletada com sucesso, ou 404 se não foi encontrada.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDespesa(@PathVariable UUID id) {
         Optional<Despesa> existingDespesa = despesaService.getDespesaById(id);

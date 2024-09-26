@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Representa uma despesa no sistema.
+ */
 @Entity
 @Table(name = "despesa")
 @Data
@@ -19,7 +22,6 @@ public class Despesa {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private UUID id;
-
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "usuario_id", nullable = false)

@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Data Transfer Object (DTO) para Usuário.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

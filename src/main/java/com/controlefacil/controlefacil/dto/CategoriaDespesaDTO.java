@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Data Transfer Object (DTO) para Categoria de Despesa.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

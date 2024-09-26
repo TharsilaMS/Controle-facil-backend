@@ -6,7 +6,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
-
+/**
+ * Representa uma Previsao Gastos no sistema.
+ */
 @Data
 @Entity
 @Table(name = "previsao_gastos")

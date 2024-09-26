@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
-
+/**
+ * Representa uma Saldo no sistema.
+ */
 @Entity
 @Table(name = "saldo")
 @Data

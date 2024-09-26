@@ -6,7 +6,9 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+/**
+ * Representa uma Usuário no sistema.
+ */
 @Entity
 @Table(name = "usuario")
 @Getter

@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Serviço que gerencia as metas de sonhos dos usuários, permitindo criar,
+ * atualizar, recuperar e excluir metas, além de gerenciar a economia do usuário.
+ */
 @Service
 public class MetaSonhoService {
 
@@ -27,8 +31,14 @@ public class MetaSonhoService {
     @Autowired
     private PrevisaoGastosRepository previsaoGastosRepository;
 
+    /**
+     * Cria uma nova meta de sonho.
+     *
+     * @param metaSonho A meta de sonho a ser criada.
+     * @return A meta de sonho criada.
+     * @throws MetaAtivaExistenteException Se o usuário já tiver uma meta ativa.
+     */
     public MetaSonho createMetaSonho(MetaSonho metaSonho) {
-
         List<MetaSonho> metasAtivas = metaSonhoRepository.findByUsuario_IdUsuarioAndStatus(
                 metaSonho.getUsuario().getIdUsuario(),
                 Status.ATIVA
@@ -41,6 +51,14 @@ public class MetaSonhoService {
         return metaSonhoRepository.save(metaSonho);
     }
 
+    /**
+     * Atualiza uma meta de sonho existente.
+     *
+     * @param id O ID da meta a ser atualizada.
+     * @param metaSonho Os novos dados da meta.
+     * @return A meta de sonho atualizada.
+     * @throws RuntimeException Se a meta não for encontrada ou se tentar atualizar uma meta ativa.
+     */
     public MetaSonho updateMetaSonho(UUID id, MetaSonho metaSonho) {
         if (metaSonhoRepository.existsById(id)) {
             MetaSonho metaExistente = metaSonhoRepository.findById(id).orElseThrow(() ->
@@ -56,30 +74,52 @@ public class MetaSonhoService {
         }
     }
 
+    /**
+     * Recupera uma meta de sonho pelo ID.
+     *
+     * @param id O ID da meta a ser recuperada.
+     * @return A meta de sonho correspondente ao ID fornecido.
+     * @throws RuntimeException Se a meta não for encontrada.
+     */
     public MetaSonho getMetaSonhoById(UUID id) {
         return metaSonhoRepository.findById(id).orElseThrow(() -> new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
     }
 
+    /**
+     * Recupera todas as metas de sonho de um usuário específico.
+     *
+     * @param usuarioId O ID do usuário cujas metas devem ser recuperadas.
+     * @return Uma lista de metas de sonho associadas ao usuário.
+     */
     public List<MetaSonho> getAllMetaSonhosByUsuarioId(UUID usuarioId) {
         return metaSonhoRepository.findByUsuario_IdUsuario(usuarioId);
     }
 
+    /**
+     * Exclui uma meta de sonho pelo ID.
+     *
+     * @param id O ID da meta a ser excluída.
+     * @throws RuntimeException Se a meta não for encontrada ou se for uma meta ativa.
+     */
     public void deleteMetaSonho(UUID id) {
         if (metaSonhoRepository.existsById(id)) {
             MetaSonho metaSonho = metaSonhoRepository.findById(id).orElseThrow(() ->
                     new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
-
-            // Não permita a exclusão de uma meta ativa
             if (metaSonho.getStatus() == Status.ATIVA) {
                 throw new RuntimeException("Não é permitido excluir uma meta ativa. Conclua a meta antes de excluí-la.");
             }
-
             metaSonhoRepository.deleteById(id);
         } else {
             throw new RuntimeException("Meta de Sonho não encontrada com ID: " + id);
         }
     }
 
+    /**
+     * Verifica se o usuário economizou algum valor e o adiciona à sua meta de sonho.
+     *
+     * @param usuarioId O ID do usuário.
+     * @return Uma mensagem sobre a economia realizada e seu impacto na meta de sonho.
+     */
     public String verificarEconomiaEGuardar(UUID usuarioId) {
         Optional<PrevisaoGastos> previsaoGastosOpt = previsaoGastosRepository.findById(usuarioId);
         if (previsaoGastosOpt.isPresent()) {
@@ -112,6 +152,11 @@ public class MetaSonhoService {
         }
     }
 
+    /**
+     * Verifica se a meta de sonho foi alcançada e atualiza seu status se necessário.
+     *
+     * @param metaSonho A meta de sonho a ser verificada.
+     */
     public void verificarMetaAlcancada(MetaSonho metaSonho) {
         BigDecimal valorEconomizado = metaSonho.getValorEconomizado();
         BigDecimal valorAlvo = metaSonho.getValorAlvo();
@@ -121,6 +166,15 @@ public class MetaSonhoService {
             metaSonhoRepository.save(metaSonho);
         }
     }
+
+    /**
+     * Adiciona um valor adicional à meta de sonho existente.
+     *
+     * @param idMeta O ID da meta a ser atualizada.
+     * @param valorAdicional O valor a ser adicionado.
+     * @return A meta de sonho atualizada.
+     * @throws RuntimeException Se a meta não for encontrada.
+     */
     public MetaSonho adicionarValorMeta(UUID idMeta, BigDecimal valorAdicional) {
         MetaSonho metaSonho = metaSonhoRepository.findById(idMeta)
                 .orElseThrow(() -> new RuntimeException("Meta de Sonho não encontrada com ID: " + idMeta));
@@ -129,10 +183,22 @@ public class MetaSonhoService {
         return metaSonhoRepository.save(metaSonho);
     }
 
+    /**
+     * Converte uma string de data para um objeto LocalDate.
+     *
+     * @param dateString A string que representa uma data.
+     * @return O objeto LocalDate correspondente.
+     */
     public LocalDate convertToLocalDate(String dateString) {
         return ConversorDeData.parseDate(dateString);
     }
 
+    /**
+     * Converte um objeto LocalDate para LocalDateTime, definindo a hora como meia-noite.
+     *
+     * @param date O objeto LocalDate a ser convertido.
+     * @return O objeto LocalDateTime correspondente.
+     */
     public LocalDateTime convertToLocalDateTime(LocalDate date) {
         return LocalDateTime.of(date, LocalTime.MIDNIGHT);
     }

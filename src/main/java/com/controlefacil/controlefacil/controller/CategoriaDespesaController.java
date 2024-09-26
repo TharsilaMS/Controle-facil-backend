@@ -12,6 +12,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Controlador REST para gerenciar categorias de despesas.
+ * Proporciona endpoints para CRUD de categorias de despesas.
+ */
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaDespesaController {
@@ -19,6 +23,11 @@ public class CategoriaDespesaController {
     @Autowired
     private CategoriaDespesaService service;
 
+    /**
+     * Retorna todas as categorias de despesas disponíveis.
+     *
+     * @return ResponseEntity contendo uma lista de CategoriaDespesaDTO com todas as categorias.
+     */
     @GetMapping
     public ResponseEntity<List<CategoriaDespesaDTO>> getAllCategorias() {
         List<CategoriaDespesa> categorias = service.findAll();
@@ -28,6 +37,12 @@ public class CategoriaDespesaController {
         return ResponseEntity.ok(categoriaDTOs);
     }
 
+    /**
+     * Retorna uma categoria de despesa específica com base no ID fornecido.
+     *
+     * @param id O UUID da categoria de despesa.
+     * @return ResponseEntity contendo o CategoriaDespesaDTO correspondente ou 404 se não for encontrada.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaDespesaDTO> getCategoriaById(@PathVariable UUID id) {
         Optional<CategoriaDespesa> categoria = service.findById(id);
@@ -36,6 +51,12 @@ public class CategoriaDespesaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Cria uma nova categoria de despesa.
+     *
+     * @param categoriaDTO O DTO contendo os dados da nova categoria.
+     * @return ResponseEntity com a nova CategoriaDespesaDTO criada ou uma mensagem de erro se a criação falhar.
+     */
     @PostMapping
     public ResponseEntity<CategoriaDespesaDTO> createCategoria(@RequestBody CategoriaDespesaDTO categoriaDTO) {
         try {
@@ -48,6 +69,13 @@ public class CategoriaDespesaController {
         }
     }
 
+    /**
+     * Atualiza uma categoria de despesa existente com base no ID fornecido.
+     *
+     * @param id O UUID da categoria de despesa a ser atualizada.
+     * @param categoriaDTO O DTO contendo os dados atualizados da categoria.
+     * @return ResponseEntity contendo o CategoriaDespesaDTO atualizado ou 404 se a categoria não for encontrada.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<CategoriaDespesaDTO> updateCategoria(@PathVariable UUID id, @RequestBody CategoriaDespesaDTO categoriaDTO) {
         if (service.findById(id).isEmpty()) {

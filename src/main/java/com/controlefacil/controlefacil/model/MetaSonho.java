@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+/**
+ * Representa uma Meta no sistema.
+ */
 @Data
 @Entity
 @Table(name = "meta_sonhos")
@@ -46,7 +48,7 @@ public class MetaSonho {
     private Status status = Status.ATIVA;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false) // Ensure it's not nullable if required
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     public MetaSonho(UUID id) {

@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Data Transfer Object (DTO) para MetaSonhos.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

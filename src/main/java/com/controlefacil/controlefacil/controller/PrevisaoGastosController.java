@@ -9,10 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Controlador responsável por gerenciar as previsões de gastos dos usuários.
+ * Este controlador permite criar, atualizar e obter previsões de gastos.
+ */
 @RestController
 @RequestMapping("/api/previsao-gastos")
 public class PrevisaoGastosController {
@@ -20,14 +22,20 @@ public class PrevisaoGastosController {
     @Autowired
     private PrevisaoGastosService previsaoGastosService;
 
+    /**
+     * Cria uma nova previsão de gastos para um usuário.
+     *
+     * @param previsaoGastosDTO Dados da previsão de gastos a ser criada
+     * @return A previsão de gastos criada, com status de resposta "Criado"
+     */
     @PostMapping
     public ResponseEntity<PrevisaoGastosDTO> createPrevisaoGastos(@RequestBody PrevisaoGastosDTO previsaoGastosDTO) {
         try {
-
             PrevisaoGastos previsaoGastos = new PrevisaoGastos();
             previsaoGastos.setUsuario(new Usuario(previsaoGastosDTO.getUsuarioId()));
             previsaoGastos.setLimiteGastos(previsaoGastosDTO.getLimiteGastos());
             previsaoGastos.setDataRevisao(previsaoGastosDTO.getDataRevisao());
+
             PrevisaoGastos savedPrevisaoGastos = previsaoGastosService.createPrevisaoGastos(previsaoGastos);
             PrevisaoGastosDTO dto = new PrevisaoGastosDTO(
                     savedPrevisaoGastos.getId(),
@@ -38,12 +46,17 @@ public class PrevisaoGastosController {
             );
             return ResponseEntity.status(201).body(dto);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-
+    /**
+     * Atualiza a previsão de gastos de um usuário específico.
+     *
+     * @param usuarioId ID do usuário cuja previsão de gastos será atualizada
+     * @param previsaoGastosDTO Dados atualizados da previsão de gastos
+     * @return A previsão de gastos atualizada, ou uma resposta "não encontrado" se não existir
+     */
     @PutMapping("/{usuarioId}")
     public ResponseEntity<PrevisaoGastosDTO> updatePrevisaoGastos(@PathVariable UUID usuarioId, @RequestBody PrevisaoGastosDTO previsaoGastosDTO) {
         try {
@@ -65,6 +78,12 @@ public class PrevisaoGastosController {
         }
     }
 
+    /**
+     * Recupera a previsão de gastos de um usuário específico.
+     *
+     * @param usuarioId ID do usuário cuja previsão de gastos será obtida
+     * @return A previsão de gastos do usuário, ou uma resposta "não encontrado" se não existir
+     */
     @GetMapping("/{usuarioId}")
     public ResponseEntity<PrevisaoGastosDTO> getPrevisaoGastos(@PathVariable UUID usuarioId) {
         try {

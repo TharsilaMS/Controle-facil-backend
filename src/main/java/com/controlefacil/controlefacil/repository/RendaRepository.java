@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.UUID;
-
+/**
+ * Repositório para gerenciar as rendas.
+ */
 public interface RendaRepository extends JpaRepository<Renda, UUID> {
     List<Renda> findByUsuario_IdUsuario(UUID idUsuario);
 }

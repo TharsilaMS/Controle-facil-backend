@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Controlador responsável por gerenciar as rendas dos usuários.
+ * Este controlador permite criar, atualizar, obter e deletar informações de renda.
+ */
 @RestController
 @RequestMapping("/api/rendas")
 public class RendaController {
@@ -24,6 +28,11 @@ public class RendaController {
     @Autowired
     private UsuarioService usuarioService;
 
+    /**
+     * Recupera todas as rendas registradas.
+     *
+     * @return Uma lista de objetos RendaDTO representando todas as rendas.
+     */
     @GetMapping
     public List<RendaDTO> getAllRendas() {
         return rendaService.getAllRendas().stream()
@@ -31,6 +40,12 @@ public class RendaController {
                 .toList();
     }
 
+    /**
+     * Recupera uma renda específica pelo seu ID.
+     *
+     * @param id ID da renda a ser recuperada
+     * @return A renda correspondente, se encontrada, ou uma resposta "não encontrado"
+     */
     @GetMapping("/{id}")
     public ResponseEntity<RendaDTO> getRendaById(@PathVariable UUID id) {
         Optional<Renda> renda = rendaService.getRendaById(id);
@@ -39,6 +54,12 @@ public class RendaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Cria uma nova renda.
+     *
+     * @param rendaDTO Dados da renda a ser criada
+     * @return A renda criada, com status de resposta "Criado", ou uma resposta "bad request" se o usuário não estiver presente
+     */
     @PostMapping
     public ResponseEntity<RendaDTO> createRenda(@RequestBody RendaDTO rendaDTO) {
         if (rendaDTO.getUsuarioId() == null) {
@@ -54,6 +75,13 @@ public class RendaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(novaRenda));
     }
 
+    /**
+     * Atualiza uma renda existente.
+     *
+     * @param id ID da renda a ser atualizada
+     * @param rendaDTO Dados atualizados da renda
+     * @return A renda atualizada, ou uma resposta "não encontrado" se a renda não existir
+     */
     @PutMapping("/{id}")
     public ResponseEntity<RendaDTO> updateRenda(@PathVariable UUID id, @RequestBody RendaDTO rendaDTO) {
         Optional<Renda> existingRenda = rendaService.getRendaById(id);
@@ -69,6 +97,12 @@ public class RendaController {
         return ResponseEntity.ok(convertToDTO(updatedRenda));
     }
 
+    /**
+     * Deleta uma renda específica pelo seu ID.
+     *
+     * @param id ID da renda a ser deletada
+     * @return Uma resposta "no content" se a renda foi deletada, ou uma resposta "não encontrado" se não existir
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRenda(@PathVariable UUID id) {
         Optional<Renda> existingRenda = rendaService.getRendaById(id);
@@ -79,6 +113,12 @@ public class RendaController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Converte uma entidade Renda em um objeto RendaDTO.
+     *
+     * @param renda A entidade Renda a ser convertida
+     * @return O objeto RendaDTO correspondente
+     */
     private RendaDTO convertToDTO(Renda renda) {
         return new RendaDTO(
                 renda.getId(),
