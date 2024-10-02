@@ -50,4 +50,6 @@ public class Usuario {
     public Usuario(UUID idUsuario) {
         this.idUsuario = idUsuario;
     }
+
+
 }

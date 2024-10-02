@@ -3,6 +3,8 @@ package com.controlefacil.controlefacil.controller;
 import com.controlefacil.controlefacil.dto.UsuarioDTO;
 import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.service.UsuarioService;
+import com.controlefacil.controlefacil.config.TokenService; // Importar TokenService
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,24 +26,21 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    /**
-     * Recupera todos os usuários cadastrados.
-     *
-     * @return Uma lista de objetos UsuarioDTO representando todos os usuários.
-     */
+    @Autowired
+    private TokenService tokenService; // Injeção de TokenService
+
     @GetMapping
+    public ResponseEntity<String> getUser() {
+        return ResponseEntity.ok("sucesso!");
+    }
+
+    @GetMapping("/status")
     public List<UsuarioDTO> getAllUsuarios() {
         return usuarioService.getAllUsuarios().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Busca um usuário específico pelo ID.
-     *
-     * @param id ID do usuário a ser buscado
-     * @return Um ResponseEntity contendo o objeto UsuarioDTO se encontrado, ou uma resposta 404 se não encontrado.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable UUID id) {
         Optional<Usuario> usuario = usuarioService.getUsuarioById(id);
@@ -57,7 +56,12 @@ public class UsuarioController {
      * @return Um ResponseEntity contendo o objeto UsuarioDTO do usuário criado, com status 201 (Criado).
      */
     @PostMapping
-    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO,
+                                                    @RequestHeader(value = "Authorization", required = false) String token) {
+        // Valida o token, mas permite que seja nulo
+        String validatedToken = tokenService.validateToken(token);
+        // Lógica para criar o usuário prossegue independentemente do token
+
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
@@ -71,13 +75,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(createdUsuario));
     }
 
-    /**
-     * Atualiza as informações de um usuário existente.
-     *
-     * @param id ID do usuário a ser atualizado
-     * @param usuarioDTO Objeto contendo os novos dados do usuário
-     * @return Um ResponseEntity contendo o objeto UsuarioDTO atualizado, ou uma resposta 404 se o usuário não for encontrado.
-     */
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable UUID id, @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuario = new Usuario();
@@ -94,24 +91,12 @@ public class UsuarioController {
         return updatedUsuario != null ? ResponseEntity.ok(convertToDTO(updatedUsuario)) : ResponseEntity.notFound().build();
     }
 
-    /**
-     * Remove um usuário pelo ID.
-     *
-     * @param id ID do usuário a ser removido
-     * @return Um ResponseEntity com status 204 (Sem Conteúdo) após a remoção.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable UUID id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Converte um objeto Usuario em UsuarioDTO.
-     *
-     * @param usuario Objeto Usuario a ser convertido
-     * @return Um objeto UsuarioDTO contendo as informações do usuário.
-     */
     private UsuarioDTO convertToDTO(Usuario usuario) {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setIdUsuario(usuario.getIdUsuario());

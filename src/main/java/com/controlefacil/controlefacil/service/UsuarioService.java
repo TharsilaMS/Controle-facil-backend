@@ -5,8 +5,10 @@ import com.controlefacil.controlefacil.model.Usuario;
 import com.controlefacil.controlefacil.repository.SaldoRepository;
 import com.controlefacil.controlefacil.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +22,9 @@ import java.util.UUID;
  */
 @Service
 public class UsuarioService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Mude para a interface
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -52,9 +57,11 @@ public class UsuarioService {
      * @param user O usuário a ser criado.
      * @return O usuário criado com o ID gerado.
      */
-    public Usuario createUsuario(Usuario user) {
-        Usuario novoUsuario = usuarioRepository.save(user);
 
+
+    public Usuario createUsuario(Usuario user) {
+        user.setSenha(passwordEncoder.encode(user.getSenha()));
+        Usuario novoUsuario = usuarioRepository.save(user);
         Saldo saldoInicial = new Saldo();
         saldoInicial.setUsuario(novoUsuario);
         saldoInicial.setSaldo(BigDecimal.ZERO);
@@ -65,7 +72,6 @@ public class UsuarioService {
 
         return novoUsuario;
     }
-
     /**
      * Atualiza as informações de um usuário existente.
      *
