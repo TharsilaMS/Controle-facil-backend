@@ -92,6 +92,17 @@ public class RendaService {
         }
 
         return rendaRepository.save(renda);
+    }/**
+     * Obtém todas as rendas associadas a um usuário específico.
+     *
+     * @param usuarioId O ID do usuário cujas rendas devem ser buscadas.
+     * @return Uma lista de rendas associadas ao usuário.
+     */
+    public List<Renda> getRendasByUsuarioId(UUID usuarioId) {
+        if (usuarioId == null) {
+            throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
+        }
+        return rendaRepository.findByUsuario_IdUsuario(usuarioId);
     }
 
     /**

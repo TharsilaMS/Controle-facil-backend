@@ -53,7 +53,21 @@ public class RendaController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    /**
+     * Recupera todas as rendas de um usuário específico.
+     *
+     * @param usuarioId ID do usuário cujas rendas serão recuperadas
+     * @return Uma lista de objetos RendaDTO representando as rendas do usuário.
+     */
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<RendaDTO>> getRendasByUsuarioId(@PathVariable UUID usuarioId) {
+        List<Renda> rendas = rendaService.getRendasByUsuarioId(usuarioId);
+        List<RendaDTO> rendaDTOs = rendas.stream()
+                .map(this::convertToDTO)
+                .toList();
 
+        return ResponseEntity.ok(rendaDTOs);
+    }
     /**
      * Cria uma nova renda.
      *
