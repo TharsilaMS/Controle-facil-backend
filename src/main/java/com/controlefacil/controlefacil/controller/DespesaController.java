@@ -77,6 +77,31 @@ public class DespesaController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    /**
+     * Retorna uma lista de despesas de um usuário específico.
+     *
+     * @param usuarioId O UUID do usuário cujas despesas serão buscadas.
+     * @return ResponseEntity contendo uma lista de DespesaDTO com as despesas do usuário.
+     */
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<DespesaDTO>> getDespesasByUsuarioId(@PathVariable UUID usuarioId) {
+        Usuario usuario = usuarioService.getUsuarioById(usuarioId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+        List<Despesa> despesas = despesaService.getDespesasByUsuarioId(usuarioId);
+        List<DespesaDTO> despesaDTOs = despesas.stream()
+                .map(d -> new DespesaDTO(
+                        d.getId(),
+                        d.getUsuario().getIdUsuario(),
+                        d.getDescricao(),
+                        d.getValor(),
+                        d.getCategoriaDespesa() != null ? d.getCategoriaDespesa().getNome() : null,
+                        d.getTipo(),
+                        d.getData()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(despesaDTOs);
+    }
 
     /**
      * Cria uma nova despesa com os dados fornecidos.
