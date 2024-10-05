@@ -35,4 +35,8 @@ public class Renda {
 
     @Column(nullable = false)
     private LocalDate data;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoRenda tipo;
 }

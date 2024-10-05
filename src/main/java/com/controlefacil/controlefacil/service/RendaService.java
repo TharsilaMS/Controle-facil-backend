@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Serviço responsável pela gestão das rendas dos usuários.
- * Este serviço permite criar, atualizar, obter e deletar rendas associadas a usuários.
+ * Serviço responsável por gerenciar as operações relacionadas à entidade Renda.
+ * Fornece métodos para criar, atualizar, deletar e buscar rendas no sistema.
  */
 @Service
 public class RendaService {
@@ -26,20 +26,20 @@ public class RendaService {
     private UsuarioRepository usuarioRepository;
 
     /**
-     * Retorna todas as rendas cadastradas.
+     * Recupera todas as rendas do sistema.
      *
-     * @return Uma lista com todas as rendas.
+     * @return uma lista de objetos Renda representando todas as rendas no sistema
      */
     public List<Renda> getAllRendas() {
         return rendaRepository.findAll();
     }
 
     /**
-     * Obtém uma renda pelo seu ID.
+     * Recupera uma renda específica pelo seu ID.
      *
-     * @param id O ID da renda a ser buscada.
-     * @return Um objeto Optional contendo a renda se encontrada, ou vazio se não.
-     * @throws IllegalArgumentException Se o ID fornecido for nulo.
+     * @param id o UUID da renda
+     * @return um Optional contendo a Renda, se encontrada, ou um Optional vazio se não encontrada
+     * @throws IllegalArgumentException se o ID for nulo
      */
     public Optional<Renda> getRendaById(UUID id) {
         if (id == null) {
@@ -49,12 +49,11 @@ public class RendaService {
     }
 
     /**
-     * Salva uma nova renda.
+     * Salva uma nova renda no sistema.
      *
-     * @param renda O objeto Renda a ser salvo.
-     * @return A renda salva.
-     * @throws IllegalArgumentException Se o ID do usuário não for fornecido.
-     * @throws RecursoNaoEncontradoException Se o usuário associado à renda não for encontrado.
+     * @param renda o objeto Renda a ser salvo
+     * @return o objeto Renda salvo no sistema
+     * @throws IllegalArgumentException se o usuário associado à renda não for fornecido ou não existir
      */
     public Renda saveRenda(Renda renda) {
         if (renda.getUsuario() == null || renda.getUsuario().getIdUsuario() == null) {
@@ -67,13 +66,13 @@ public class RendaService {
     }
 
     /**
-     * Atualiza uma renda existente.
+     * Atualiza uma renda existente no sistema.
      *
-     * @param id O ID da renda a ser atualizada.
-     * @param rendaDetails Objeto com os novos detalhes da renda.
-     * @return A renda atualizada.
-     * @throws IllegalArgumentException Se o ID fornecido for nulo.
-     * @throws RecursoNaoEncontradoException Se a renda não for encontrada.
+     * @param id o UUID da renda a ser atualizada
+     * @param rendaDetails os novos detalhes da renda
+     * @return o objeto Renda atualizado
+     * @throws IllegalArgumentException se o ID da renda for nulo
+     * @throws RecursoNaoEncontradoException se a renda ou o usuário não forem encontrados
      */
     public Renda updateRenda(UUID id, Renda rendaDetails) {
         if (id == null) {
@@ -84,6 +83,7 @@ public class RendaService {
         renda.setDescricao(rendaDetails.getDescricao());
         renda.setValor(rendaDetails.getValor());
         renda.setData(rendaDetails.getData());
+        renda.setTipo(rendaDetails.getTipo()); // Atualizando o tipo
 
         if (rendaDetails.getUsuario() != null && rendaDetails.getUsuario().getIdUsuario() != null) {
             Usuario usuario = usuarioRepository.findById(rendaDetails.getUsuario().getIdUsuario())
@@ -92,11 +92,14 @@ public class RendaService {
         }
 
         return rendaRepository.save(renda);
-    }/**
-     * Obtém todas as rendas associadas a um usuário específico.
+    }
+
+    /**
+     * Recupera todas as rendas de um usuário específico.
      *
-     * @param usuarioId O ID do usuário cujas rendas devem ser buscadas.
-     * @return Uma lista de rendas associadas ao usuário.
+     * @param usuarioId o UUID do usuário
+     * @return uma lista de objetos Renda associados ao usuário
+     * @throws IllegalArgumentException se o ID do usuário for nulo
      */
     public List<Renda> getRendasByUsuarioId(UUID usuarioId) {
         if (usuarioId == null) {
@@ -106,11 +109,11 @@ public class RendaService {
     }
 
     /**
-     * Deleta uma renda pelo seu ID.
+     * Deleta uma renda específica pelo seu ID.
      *
-     * @param id O ID da renda a ser deletada.
-     * @throws IllegalArgumentException Se o ID fornecido for nulo.
-     * @throws RecursoNaoEncontradoException Se a renda não for encontrada.
+     * @param id o UUID da renda a ser deletada
+     * @throws IllegalArgumentException se o ID da renda for nulo
+     * @throws RecursoNaoEncontradoException se a renda não for encontrada
      */
     public void deleteRenda(UUID id) {
         if (id == null) {

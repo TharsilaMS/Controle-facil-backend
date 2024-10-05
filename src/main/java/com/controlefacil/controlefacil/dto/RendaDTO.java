@@ -1,5 +1,6 @@
 package com.controlefacil.controlefacil.dto;
 
+import com.controlefacil.controlefacil.model.TipoRenda;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +21,6 @@ public class RendaDTO {
     private String descricao;
     private BigDecimal valor;
     private LocalDate data;
+    private TipoRenda tipo;
 
 }

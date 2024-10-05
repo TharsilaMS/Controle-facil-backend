@@ -15,8 +15,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Controlador responsável por gerenciar as rendas dos usuários.
- * Este controlador permite criar, atualizar, obter e deletar informações de renda.
+ * Controlador responsável por gerenciar as requisições HTTP relacionadas ao recurso Renda.
+ * Ele fornece endpoints para criar, recuperar, atualizar e deletar entradas de renda.
  */
 @RestController
 @RequestMapping("/api/rendas")
@@ -29,9 +29,9 @@ public class RendaController {
     private UsuarioService usuarioService;
 
     /**
-     * Recupera todas as rendas registradas.
+     * Recupera uma lista de todas as rendas do sistema.
      *
-     * @return Uma lista de objetos RendaDTO representando todas as rendas.
+     * @return uma lista de objetos RendaDTO que representam todas as rendas
      */
     @GetMapping
     public List<RendaDTO> getAllRendas() {
@@ -43,8 +43,8 @@ public class RendaController {
     /**
      * Recupera uma renda específica pelo seu ID.
      *
-     * @param id ID da renda a ser recuperada
-     * @return A renda correspondente, se encontrada, ou uma resposta "não encontrado"
+     * @param id o UUID da renda
+     * @return um ResponseEntity contendo o RendaDTO se encontrado, ou 404 se não encontrado
      */
     @GetMapping("/{id}")
     public ResponseEntity<RendaDTO> getRendaById(@PathVariable UUID id) {
@@ -53,11 +53,12 @@ public class RendaController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     /**
      * Recupera todas as rendas de um usuário específico.
      *
-     * @param usuarioId ID do usuário cujas rendas serão recuperadas
-     * @return Uma lista de objetos RendaDTO representando as rendas do usuário.
+     * @param usuarioId o UUID do usuário
+     * @return um ResponseEntity contendo uma lista de RendaDTOs associadas ao usuário
      */
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<RendaDTO>> getRendasByUsuarioId(@PathVariable UUID usuarioId) {
@@ -68,11 +69,13 @@ public class RendaController {
 
         return ResponseEntity.ok(rendaDTOs);
     }
+
     /**
-     * Cria uma nova renda.
+     * Cria uma nova renda para um usuário.
      *
-     * @param rendaDTO Dados da renda a ser criada
-     * @return A renda criada, com status de resposta "Criado", ou uma resposta "bad request" se o usuário não estiver presente
+     * @param rendaDTO os dados da nova renda no formato de um objeto RendaDTO
+     * @return um ResponseEntity contendo o RendaDTO criado com status 201 (Created),
+     * ou 400 (Bad Request) se o ID do usuário não for fornecido
      */
     @PostMapping
     public ResponseEntity<RendaDTO> createRenda(@RequestBody RendaDTO rendaDTO) {
@@ -85,16 +88,17 @@ public class RendaController {
         renda.setDescricao(rendaDTO.getDescricao());
         renda.setValor(rendaDTO.getValor());
         renda.setData(rendaDTO.getData());
+        renda.setTipo(rendaDTO.getTipo());
         Renda novaRenda = rendaService.saveRenda(renda);
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(novaRenda));
     }
 
     /**
-     * Atualiza uma renda existente.
+     * Atualiza uma renda existente pelo seu ID.
      *
-     * @param id ID da renda a ser atualizada
-     * @param rendaDTO Dados atualizados da renda
-     * @return A renda atualizada, ou uma resposta "não encontrado" se a renda não existir
+     * @param id o UUID da renda a ser atualizada
+     * @param rendaDTO os novos dados da renda no formato de um objeto RendaDTO
+     * @return um ResponseEntity contendo o RendaDTO atualizado ou 404 (Not Found) se a renda não for encontrada
      */
     @PutMapping("/{id}")
     public ResponseEntity<RendaDTO> updateRenda(@PathVariable UUID id, @RequestBody RendaDTO rendaDTO) {
@@ -107,6 +111,7 @@ public class RendaController {
         renda.setDescricao(rendaDTO.getDescricao());
         renda.setValor(rendaDTO.getValor());
         renda.setData(rendaDTO.getData());
+        renda.setTipo(rendaDTO.getTipo()); // Atualizando o tipo
         Renda updatedRenda = rendaService.saveRenda(renda);
         return ResponseEntity.ok(convertToDTO(updatedRenda));
     }
@@ -114,8 +119,9 @@ public class RendaController {
     /**
      * Deleta uma renda específica pelo seu ID.
      *
-     * @param id ID da renda a ser deletada
-     * @return Uma resposta "no content" se a renda foi deletada, ou uma resposta "não encontrado" se não existir
+     * @param id o UUID da renda a ser deletada
+     * @return um ResponseEntity com status 204 (No Content) se a operação for bem-sucedida,
+     * ou 404 (Not Found) se a renda não for encontrada
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRenda(@PathVariable UUID id) {
@@ -130,8 +136,8 @@ public class RendaController {
     /**
      * Converte uma entidade Renda em um objeto RendaDTO.
      *
-     * @param renda A entidade Renda a ser convertida
-     * @return O objeto RendaDTO correspondente
+     * @param renda a entidade Renda a ser convertida
+     * @return o objeto RendaDTO correspondente
      */
     private RendaDTO convertToDTO(Renda renda) {
         return new RendaDTO(
@@ -139,7 +145,8 @@ public class RendaController {
                 renda.getUsuario().getIdUsuario(),
                 renda.getDescricao(),
                 renda.getValor(),
-                renda.getData()
+                renda.getData(),
+                renda.getTipo()
         );
     }
 }
