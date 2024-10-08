@@ -10,6 +10,8 @@ public class ControlefacilApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ControlefacilApplication.class, args);
+
 	}
+
 
 }

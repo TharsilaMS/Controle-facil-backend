@@ -27,12 +27,9 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private TokenService tokenService; // Injeção de TokenService
+    private TokenService tokenService;
 
-    @GetMapping
-    public ResponseEntity<String> getUser() {
-        return ResponseEntity.ok("sucesso!");
-    }
+
 
     @GetMapping("/status")
     public List<UsuarioDTO> getAllUsuarios() {
