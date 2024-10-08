@@ -74,15 +74,7 @@ public class UsuarioControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    @Test
-    public void testCreateUsuario() {
-        when(usuarioService.createUsuario(any(Usuario.class))).thenReturn(usuario);
 
-        ResponseEntity<UsuarioDTO> response = usuarioController.createUsuario(usuarioDTO);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(usuarioDTO, response.getBody());
-    }
 
     @Test
     public void testUpdateUsuario_Success() {

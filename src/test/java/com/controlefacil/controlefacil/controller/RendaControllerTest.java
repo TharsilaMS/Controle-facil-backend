@@ -1,9 +1,7 @@
 package com.controlefacil.controlefacil.controller;
 
-
 import com.controlefacil.controlefacil.dto.RendaDTO;
-import com.controlefacil.controlefacil.model.Renda;
-import com.controlefacil.controlefacil.model.Usuario;
+import com.controlefacil.controlefacil.model.*;
 import com.controlefacil.controlefacil.service.RendaService;
 import com.controlefacil.controlefacil.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,24 +11,23 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig
-public class RendaControllerTest {
+class RendaControllerTest {
 
     @InjectMocks
-    private RendaController controller;
+    private RendaController rendaController;
 
     @Mock
     private RendaService rendaService;
@@ -38,115 +35,130 @@ public class RendaControllerTest {
     @Mock
     private UsuarioService usuarioService;
 
+    private UUID usuarioId;
+    private UUID rendaId;
+    private Renda renda;
+    private Usuario usuario; // Declare Usuario
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
+        usuarioId = UUID.randomUUID();
+        rendaId = UUID.randomUUID();
+
+        // Create a valid Usuario instance
+        usuario = new Usuario(usuarioId, "Nome do Usuário", "email@example.com", "senha", LocalDateTime.now(),
+                Genero.MASCULINO, LocalDate.of(1990, 1, 1), "Tecnologia", FaixaSalarial.DE_2K_A_5K);
+
+        // Initialize Renda with a valid Usuario and LocalDate
+        renda = new Renda(rendaId, usuario, "Descrição", BigDecimal.valueOf(1000), LocalDate.now(), TipoRenda.SALARIO);
     }
 
     @Test
-    public void testGetAllRendas() {
-        UUID usuarioId = UUID.randomUUID();
-        Renda renda1 = new Renda(UUID.randomUUID(), new Usuario(usuarioId), "Salário", BigDecimal.valueOf(1000), LocalDate.now());
-        Renda renda2 = new Renda(UUID.randomUUID(), new Usuario(usuarioId), "Freelance", BigDecimal.valueOf(500), LocalDate.now());
+    void testGetAllRendas() {
+        List<Renda> rendas = new ArrayList<>();
+        rendas.add(renda);
+        when(rendaService.getAllRendas()).thenReturn(rendas);
 
-        when(rendaService.getAllRendas()).thenReturn(Arrays.asList(renda1, renda2));
+        List<RendaDTO> result = rendaController.getAllRendas();
 
-        List<RendaDTO> resposta = controller.getAllRendas();
-        assertEquals(2, resposta.size());
-        assertEquals("Salário", resposta.get(0).getDescricao());
-        assertEquals("Freelance", resposta.get(1).getDescricao());
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Descrição", result.get(0).getDescricao());
     }
 
     @Test
-    public void testGetRendaByIdEncontrada() {
-        UUID id = UUID.randomUUID();
-        UUID usuarioId = UUID.randomUUID();
-        Renda renda = new Renda(id, new Usuario(usuarioId), "Salário", BigDecimal.valueOf(1000), LocalDate.now());
+    void testGetRendaById_Found() {
+        when(rendaService.getRendaById(rendaId)).thenReturn(Optional.of(renda));
 
-        when(rendaService.getRendaById(id)).thenReturn(Optional.of(renda));
+        ResponseEntity<RendaDTO> response = rendaController.getRendaById(rendaId);
 
-        ResponseEntity<RendaDTO> resposta = controller.getRendaById(id);
-        assertEquals(HttpStatus.OK, resposta.getStatusCode());
-        assertEquals("Salário", resposta.getBody().getDescricao());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Descrição", response.getBody().getDescricao());
     }
 
     @Test
-    public void testGetRendaByIdNaoEncontrada() {
-        UUID id = UUID.randomUUID();
-        when(rendaService.getRendaById(id)).thenReturn(Optional.empty());
+    void testGetRendaById_NotFound() {
+        when(rendaService.getRendaById(rendaId)).thenReturn(Optional.empty());
 
-        ResponseEntity<RendaDTO> resposta = controller.getRendaById(id);
-        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
+        ResponseEntity<RendaDTO> response = rendaController.getRendaById(rendaId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void testCreateRendaComSucesso() {
-        UUID usuarioId = UUID.randomUUID();
-        RendaDTO rendaDTO = new RendaDTO(null, usuarioId, "Salário", BigDecimal.valueOf(1000), LocalDate.now());
-        Renda renda = new Renda(UUID.randomUUID(), new Usuario(usuarioId), "Salário", BigDecimal.valueOf(1000), LocalDate.now());
+    void testGetRendasByUsuarioId() {
+        List<Renda> rendas = new ArrayList<>();
+        rendas.add(renda);
+        when(rendaService.getRendasByUsuarioId(usuarioId)).thenReturn(rendas);
 
+        ResponseEntity<List<RendaDTO>> response = rendaController.getRendasByUsuarioId(usuarioId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void testCreateRenda_Success() {
+        RendaDTO rendaDTO = new RendaDTO(rendaId, usuarioId, "Nova Renda", BigDecimal.valueOf(1500), LocalDate.now(), TipoRenda.FREELANCE);
+        Renda novaRenda = new Renda(rendaId, usuario, rendaDTO.getDescricao(), rendaDTO.getValor(), rendaDTO.getData(), rendaDTO.getTipo());
+
+        when(rendaService.saveRenda(any(Renda.class))).thenReturn(novaRenda);
+
+        ResponseEntity<RendaDTO> response = rendaController.createRenda(rendaDTO);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("Nova Renda", response.getBody().getDescricao());
+    }
+
+    @Test
+    void testCreateRenda_BadRequest() {
+        RendaDTO rendaDTO = new RendaDTO(null, null, "Nova Renda", BigDecimal.valueOf(1500), LocalDate.now(), TipoRenda.FREELANCE);
+
+        ResponseEntity<RendaDTO> response = rendaController.createRenda(rendaDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void testUpdateRenda_Success() {
+        RendaDTO rendaDTO = new RendaDTO(rendaId, usuarioId, "Renda Atualizada", BigDecimal.valueOf(2000), LocalDate.now(), TipoRenda.INVESTIMENTO);
+        when(rendaService.getRendaById(rendaId)).thenReturn(Optional.of(renda));
         when(rendaService.saveRenda(any(Renda.class))).thenReturn(renda);
 
-        ResponseEntity<RendaDTO> resposta = controller.createRenda(rendaDTO);
-        assertEquals(HttpStatus.CREATED, resposta.getStatusCode());
-        assertEquals("Salário", resposta.getBody().getDescricao());
+        ResponseEntity<RendaDTO> response = rendaController.updateRenda(rendaId, rendaDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Renda Atualizada", response.getBody().getDescricao());
     }
 
     @Test
-    public void testCreateRendaSemUsuarioId() {
-        RendaDTO rendaDTO = new RendaDTO(null, null, "Salário", BigDecimal.valueOf(1000), LocalDate.now());
+    void testUpdateRenda_NotFound() {
+        RendaDTO rendaDTO = new RendaDTO(rendaId, usuarioId, "Renda Atualizada", BigDecimal.valueOf(2000), LocalDate.now(), TipoRenda.INVESTIMENTO);
+        when(rendaService.getRendaById(rendaId)).thenReturn(Optional.empty());
 
-        ResponseEntity<RendaDTO> resposta = controller.createRenda(rendaDTO);
-        assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
-        assertEquals(null, resposta.getBody());
+        ResponseEntity<RendaDTO> response = rendaController.updateRenda(rendaId, rendaDTO);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void testUpdateRendaComSucesso() {
-        UUID id = UUID.randomUUID();
-        UUID usuarioId = UUID.randomUUID();
-        RendaDTO rendaDTO = new RendaDTO(null, usuarioId, "Salário Atualizado", BigDecimal.valueOf(1200), LocalDate.now());
-        Renda rendaExistente = new Renda(id, new Usuario(usuarioId), "Salário", BigDecimal.valueOf(1000), LocalDate.now());
-        Renda rendaAtualizada = new Renda(id, new Usuario(usuarioId), "Salário Atualizado", BigDecimal.valueOf(1200), LocalDate.now());
+    void testDeleteRenda_Success() {
+        when(rendaService.getRendaById(rendaId)).thenReturn(Optional.of(renda));
 
-        when(rendaService.getRendaById(id)).thenReturn(Optional.of(rendaExistente));
-        when(rendaService.saveRenda(any(Renda.class))).thenReturn(rendaAtualizada);
+        ResponseEntity<Void> response = rendaController.deleteRenda(rendaId);
 
-        ResponseEntity<RendaDTO> resposta = controller.updateRenda(id, rendaDTO);
-        assertEquals(HttpStatus.OK, resposta.getStatusCode());
-        assertEquals("Salário Atualizado", resposta.getBody().getDescricao());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(rendaService, times(1)).deleteRenda(rendaId);
     }
 
     @Test
-    public void testUpdateRendaNaoEncontrada() {
-        UUID id = UUID.randomUUID();
-        RendaDTO rendaDTO = new RendaDTO(null, UUID.randomUUID(), "Salário Atualizado", BigDecimal.valueOf(1200), LocalDate.now());
+    void testDeleteRenda_NotFound() {
+        when(rendaService.getRendaById(rendaId)).thenReturn(Optional.empty());
 
-        when(rendaService.getRendaById(id)).thenReturn(Optional.empty());
+        ResponseEntity<Void> response = rendaController.deleteRenda(rendaId);
 
-        ResponseEntity<RendaDTO> resposta = controller.updateRenda(id, rendaDTO);
-        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
-    }
-
-    @Test
-    public void testDeleteRendaComSucesso() {
-        UUID id = UUID.randomUUID();
-        UUID usuarioId = UUID.randomUUID();
-        Renda rendaExistente = new Renda(id, new Usuario(usuarioId), "Salário", BigDecimal.valueOf(1000), LocalDate.now());
-
-        when(rendaService.getRendaById(id)).thenReturn(Optional.of(rendaExistente));
-
-        ResponseEntity<Void> resposta = controller.deleteRenda(id);
-        assertEquals(HttpStatus.NO_CONTENT, resposta.getStatusCode());
-        verify(rendaService, times(1)).deleteRenda(id);
-    }
-
-    @Test
-    public void testDeleteRendaNaoEncontrada() {
-        UUID id = UUID.randomUUID();
-        when(rendaService.getRendaById(id)).thenReturn(Optional.empty());
-
-        ResponseEntity<Void> resposta = controller.deleteRenda(id);
-        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(rendaService, never()).deleteRenda(any());
     }
 }
