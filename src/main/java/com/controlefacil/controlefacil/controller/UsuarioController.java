@@ -58,10 +58,8 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO,
                                                     @RequestHeader(value = "Authorization", required = false) String token) {
-        // Valida o token, mas permite que seja nulo
-        String validatedToken = tokenService.validateToken(token);
-        // Lógica para criar o usuário prossegue independentemente do token
 
+        String validatedToken = tokenService.validateToken(token);
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
