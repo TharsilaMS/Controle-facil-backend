@@ -105,14 +105,12 @@ public class MetaSonhoService {
         if (metaSonhoRepository.existsById(id)) {
             MetaSonho metaSonho = metaSonhoRepository.findById(id).orElseThrow(() ->
                     new RuntimeException("Meta de Sonho não encontrada com ID: " + id));
-            if (metaSonho.getStatus() == Status.ATIVA) {
-                throw new RuntimeException("Não é permitido excluir uma meta ativa. Conclua a meta antes de excluí-la.");
-            }
             metaSonhoRepository.deleteById(id);
         } else {
             throw new RuntimeException("Meta de Sonho não encontrada com ID: " + id);
         }
     }
+
 
     /**
      * Verifica se o usuário economizou algum valor e o adiciona à sua meta de sonho.

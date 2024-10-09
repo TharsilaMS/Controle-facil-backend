@@ -164,8 +164,13 @@ public class DespesaController {
         Usuario usuario = usuarioService.getUsuarioById(despesaDTO.getUsuarioId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
+
         CategoriaDespesa categoria = categoriaDespesaService.findByNome(despesaDTO.getCategoriaDespesaNome())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Categoria de despesa não encontrada"));
+                .orElseGet(() -> {
+                    CategoriaDespesa novaCategoria = new CategoriaDespesa();
+                    novaCategoria.setNome(despesaDTO.getCategoriaDespesaNome());
+                    return categoriaDespesaService.save(novaCategoria);
+                });
 
         Despesa despesa = existingDespesa.get();
         despesa.setDescricao(despesaDTO.getDescricao());
@@ -187,6 +192,7 @@ public class DespesaController {
         );
         return ResponseEntity.ok(dto);
     }
+
 
     /**
      * Deleta uma despesa existente com base no ID fornecido.
