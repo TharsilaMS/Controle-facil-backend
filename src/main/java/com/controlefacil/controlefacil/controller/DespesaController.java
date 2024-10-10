@@ -109,7 +109,7 @@ public class DespesaController {
      * @param despesaDTO O DTO contendo os dados da nova despesa.
      * @return ResponseEntity com a despesa criada ou uma mensagem de erro se a criação falhar.
      */
-    @PostMapping("/nova")
+    @PostMapping
     public ResponseEntity<DespesaDTO> createDespesa(@RequestBody DespesaDTO despesaDTO) {
         if (despesaDTO.getUsuarioId() == null) {
             return ResponseEntity.badRequest().body(null);

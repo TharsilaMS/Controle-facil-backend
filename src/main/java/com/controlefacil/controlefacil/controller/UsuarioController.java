@@ -52,7 +52,7 @@ public class UsuarioController {
      * @param usuarioDTO Objeto contendo os dados do novo usuário
      * @return Um ResponseEntity contendo o objeto UsuarioDTO do usuário criado, com status 201 (Criado).
      */
-    @PostMapping("/criar")
+    @PostMapping
     public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO,
                                                     @RequestHeader(value = "Authorization", required = false) String token) {
 
