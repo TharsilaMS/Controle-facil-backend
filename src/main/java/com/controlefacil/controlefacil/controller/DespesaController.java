@@ -114,7 +114,6 @@ public class DespesaController {
         if (despesaDTO.getUsuarioId() == null) {
             return ResponseEntity.badRequest().body(null);
         }
-
         Usuario usuario = usuarioService.getUsuarioById(despesaDTO.getUsuarioId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
